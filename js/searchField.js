@@ -5,6 +5,10 @@ document.addEventListener('keydown', (e) => {
     const input = document.getElementById('searchText');
     const form = document.getElementById('command-field');
 
+    if (e.key === 'Control' || e.key === 'Alt' || e.key === 'Shift') {
+        return;
+    }
+
     if (document.activeElement === input) {
         if (input.value === '') {
             clock.style.display = '';

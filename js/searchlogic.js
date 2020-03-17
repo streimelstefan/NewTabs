@@ -1,3 +1,5 @@
+import { config, getSearchProviderPrefix} from "./config.js";
+
 const input = document.getElementById('searchText');
 
 document.getElementById('searchForm').addEventListener('submit', (event) => {
@@ -5,13 +7,30 @@ document.getElementById('searchForm').addEventListener('submit', (event) => {
 
     if (input.value.startsWith(':')) {
 
+        const query = input.value;
+        const command = query.replace(':', '').split(' ')[0];
+        const param = concatStringArray(query.split(' '), 1);
+
+        config.commands.forEach(configCommand => {
+            if (configCommand.key === command) {
+                configCommand.action(param);
+            }
+        })
+
     } else {
 
-        
-        const query = config.searchproviders[0].searchPrefix + input.value;
-        
-        console.log(query);
+        const query = getSearchProviderPrefix(config.standadSearchProvider) + input.value;
         
         window.location.href = query;
     }
-})
+});
+
+function concatStringArray(array, start) {
+    let string = '';
+
+    for (let i = start; i < array.length; i++) {
+        string += array[i] + ' ';
+    }
+
+    return string;
+}
