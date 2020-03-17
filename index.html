@@ -9,9 +9,16 @@
 <body>
     <div class="center-screen center-container">
         <div id="clock"></div>
-        <div id="command-field"></div>
+        <div id="command-field">
+            <form id="searchForm" spellcheck="false" autocomplete="off" autocapitalize="false" class="fillout">
+                <input type="text" name="search" id="searchText" class="fillout">
+            </form>
+        </div>
     </div>
 
     <script src="js/clock.js"></script>
+    <script src="js/searchField.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/searchlogic.js"></script>
 </body>
 </html>
