@@ -1,13 +1,33 @@
 const clock = document.getElementById('clock');
 
 function getTimeString() {
-    let date = new Date();
+    const date = new Date();
+    let seconds = '';
+    let minutes = '';
+    let hours = '';
 
-    return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+    if (date.getSeconds() < 10) {
+        seconds = '0' + date.getSeconds();
+    } else {
+        seconds = date.getSeconds();
+    }
+
+    if (date.getMinutes() < 10) {
+        minutes = '0' + date.getMinutes();
+    } else {
+        minutes = date.getMinutes();
+    }
+
+    if (date.getHours() < 10) {
+        hours = '0' + date.getHours();
+    } else {
+        hours = date.getHours();
+    }
+
+    return `${hours}:${minutes}:${seconds}`;
 }
 
 function updateClock() {
-    console.log(getTimeString());
     clock.innerHTML = getTimeString();
 }
 
