@@ -38,12 +38,21 @@ document.addEventListener('keydown', (e) => {
 
             let changed = false;
 
-            config.shortCuts.forEach(shortcut => {
-                if (shortcut.key.startsWith(input.value)) {
-                    searchHint.value = shortcut.key;
-                    changed = true;
-                }
-            });
+            if (input.value.startsWith(':')) {
+                config.commands.forEach(command => {
+                    if ((':' + command.key).startsWith(input.value)) {
+                        searchHint.value = ':' + command.key;
+                        changed = true;
+                    }
+                });
+            } else {
+                config.shortCuts.forEach(shortcut => {
+                    if (shortcut.key.startsWith(input.value)) {
+                        searchHint.value = shortcut.key;
+                        changed = true;
+                    }
+                });
+            }
 
             if (!changed) {
                 searchHint.value = '';
