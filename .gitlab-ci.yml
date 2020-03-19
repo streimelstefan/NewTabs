@@ -7,3 +7,5 @@ deploy:
   stage: deploy
   script:
     - firebase deploy --token $FIREBASE_TOKEN
+  onyly:
+    - tags
