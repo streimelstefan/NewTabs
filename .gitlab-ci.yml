@@ -5,16 +5,22 @@ stages:
 image: node:12.13.0-alpine
 
 build:
+  before_script:
+    - curl -sL https://sentry.io/get-cli/ | bash
   stage: build
   script:
-    - echo $CI_COMMIT_TAG
+    - sentry-cli releases new $CI_COMMIT_TAG
+    - sentry-cli releases set-commits --auto $CI_COMMIT_TAG
+    - sentry-cli releases finalize "$CI_COMMIT_TAG"
   only:
     - tags
 
 deploy:
+  before_script:
+    - npm i -g firebase-tools
   stage: deploy
   script:
-    - npm i -g firebase-tools
+    - 
     - firebase deploy --token $FIREBASE_TOKEN
   only:
     - tags
