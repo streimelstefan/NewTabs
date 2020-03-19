@@ -4,11 +4,10 @@ deploy:
   before_script:
     - npm i -g firebase-tools
     - npm install @sentry/cli
-    - apt-get install gettext-base
+    - npm install -g envsub
   stage: deploy
   script:
-    - envsubst < index.html
-    - cat index.html
+    - envsub -d index.html
     - ./node_modules/@sentry/cli/sentry-cli releases new $CI_COMMIT_TAG
     - ./node_modules/@sentry/cli/sentry-cli releases set-commits --auto $CI_COMMIT_TAG
     - ./node_modules/@sentry/cli/sentry-cli releases finalize "$CI_COMMIT_TAG"
