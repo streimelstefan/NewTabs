@@ -1,11 +1,18 @@
+stages: 
+  - build
+  - deploy
+
 image: node:12.13.0-alpine
 
-before_script:
-  - npm i -g firebase-tools
+build:
+  stage: build
+  script:
+    - echo ${APP_VERSION}
 
 deploy:
   stage: deploy
   script:
+    - npm i -g firebase-tools
     - firebase deploy --token $FIREBASE_TOKEN
   only:
     - tags
