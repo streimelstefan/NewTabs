@@ -1,0 +1,11 @@
+image: node:12.13.0-alpine
+
+before_script:
+  - npm i -g firebase-tools
+
+deploy:
+  stage: deploy
+  script:
+    - firebase deploy --token $FIREBASE_TOKEN
+  only:
+    - tags
