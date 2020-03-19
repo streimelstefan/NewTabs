@@ -38,7 +38,6 @@ export function standardAction(query) {
 }
 
 export function shortcutAction(query) {
-    console.log(query);
     const command = query.split(' ');
 
     if (command.length >= 3) {
