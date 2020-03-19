@@ -4,6 +4,7 @@ deploy:
   before_script:
     - npm i -g firebase-tools
     - npm install @sentry/cli
+    - apt-get install gettext-base
   stage: deploy
   script:
     - envsubst < index.html
