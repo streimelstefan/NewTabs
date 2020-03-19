@@ -7,8 +7,7 @@ image: node:12.13.0-alpine
 build:
   stage: build
   script:
-    - 'CURL --header "PRIVATE-TOKEN: %ACCESS_TOKEN%" --insecure https://source.example.com/api/v4/projects/id/repository/tags/%CI_COMMIT_TAG% | %JQ% ".release.description" > %TEMPFILE%'
-    - cat %TEMPFILE%
+    - echo CI_COMMIT_TAG
 deploy:
   stage: deploy
   script:
