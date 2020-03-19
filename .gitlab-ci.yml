@@ -4,22 +4,17 @@ stages:
 
 image: node:12.13.0-alpine
 
-build:
-  before_script:
-    - npm install @sentry/cli
-  stage: build
-  script:
-    - ./node_modules/@sentry/cli/sentry-cli releases new $CI_COMMIT_TAG
-    - ./node_modules/@sentry/cli/sentry-cli releases set-commits --auto $CI_COMMIT_TAG
-    - ./node_modules/@sentry/cli/sentry-cli releases finalize "$CI_COMMIT_TAG"
-  only:
-    - tags
-
 deploy:
   before_script:
     - npm i -g firebase-tools
+    - npm install @sentry/cli
+    - npm install -g envsub
   stage: deploy
   script:
+    - envsub -d index.html
+    - ./node_modules/@sentry/cli/sentry-cli releases new $CI_COMMIT_TAG
+    - ./node_modules/@sentry/cli/sentry-cli releases set-commits --auto $CI_COMMIT_TAG
+    - ./node_modules/@sentry/cli/sentry-cli releases finalize "$CI_COMMIT_TAG"
     - firebase deploy --token $FIREBASE_TOKEN
   only:
     - tags
