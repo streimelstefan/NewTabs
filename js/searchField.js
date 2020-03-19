@@ -63,6 +63,10 @@ document.addEventListener('keydown', (e) => {
         }
     }, 50);
 
+    if (e.key === 'Control' || e.key === 'Alt' || e.key === 'Shift') {
+        return;
+    }
+
     if (document.activeElement === input) {
         if (input.value === '' && e.code === "Backspace") {
             clock.style.display = 'block';

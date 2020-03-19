@@ -5,8 +5,6 @@ const input = document.getElementById('searchText');
 document.getElementById('searchForm').addEventListener('submit', (event) => {
     event.preventDefault();
 
-    console.log('test');
-
     if (input.value.startsWith(':')) {
 
         const query = input.value;
