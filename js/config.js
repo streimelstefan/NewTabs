@@ -1,9 +1,32 @@
-import { googleAction, yahooAction, duckduckgoAction, bingAction, standardAction } from './commands.js';
+import { googleAction, yahooAction, duckduckgoAction, bingAction, standardAction, shortcutAction } from './commands.js';
 
 let ssp = window.localStorage.getItem('ssp');
 if (!ssp) {
     ssp = 'Google';
     window.localStorage.setItem('ssp', ssp);
+}
+
+let sc = window.localStorage.getItem('sc');
+if (!sc) {
+    sc = [
+        {
+            key: 'g',
+            url: 'https://www.google.com',
+            name: 'Google'
+        },
+        {
+            key: 'yt',
+            url: 'https://www.youtube.com',
+            name: 'Youtube'
+        },
+        {
+            key: 'r',
+            url: 'https://www.reddit.com',
+            name: 'Reddit'
+        }
+    ]
+} else {
+    sc = JSON.parse(sc);
 }
 
 export const config = {
@@ -46,9 +69,16 @@ export const config = {
         {
             key: 'standard',
             action: standardAction
+        }, 
+        {
+            key: 'sc',
+            action: shortcutAction
         }
-    ]
+    ],
+    shortCuts: sc
 }
+
+console.log(config);
 
 export function getSearchProviderPrefix(name) {
     let prefix = null;

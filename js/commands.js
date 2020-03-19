@@ -36,3 +36,22 @@ export function standardAction(query) {
 
     window.localStorage.setItem('ssp', config.standadSearchProvider);
 }
+
+export function shortcutAction(query) {
+    console.log(query);
+    const command = query.split(' ');
+
+    if (command.length >= 3) {
+        if (command[0] === 'add') {
+            config.shortCuts.push({key: command[1], url: command[2], name: command[3] || command[1]});
+        } else if (command[0] === 'remove') {
+            config.shortCuts = config.shortCuts.filter(shortcut => {
+                return !(shortcut.key === command[1] ||
+                         shortcut.name === command[1] ||
+                         shortcut.url == command[1]);
+            });
+        }
+        window.localStorage.setItem('sc', JSON.stringify(config.shortCuts));
+        document.getElementById('searchText').value = '';
+    }
+}
