@@ -5,6 +5,14 @@ const input = document.getElementById('searchText');
 document.getElementById('searchForm').addEventListener('submit', (event) => {
     event.preventDefault();
 
+    console.log('https://' + input.value);
+
+    if (isValidUrl('https://' + input.value)) {
+        console.log('true');
+        window.location.href = 'https://' + input.value;
+        return;
+    }
+
     if (input.value.startsWith(':')) {
 
         const query = input.value;
@@ -28,6 +36,15 @@ document.getElementById('searchForm').addEventListener('submit', (event) => {
 
     }
 });
+
+const isValidUrl = (string) => {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;  
+    }
+}
 
 function executeShortCut(query) {
     for (let i = 0; i < config.shortCuts.length; i++) {
