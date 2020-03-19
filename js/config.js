@@ -78,7 +78,6 @@ export const config = {
     shortCuts: sc
 }
 
-console.log(config);
 
 export function getSearchProviderPrefix(name) {
     let prefix = null;
