@@ -17,11 +17,6 @@ document.addEventListener('keydown', (e) => {
         e.preventDefault();
     }
 
-    
-    console.log(searchHint.value.length);
-    console.log(input.value.length);
-    console.log(!(searchHint.value.length <= input.value.length));
-
     if (e.code === 'Backspace' && e.ctrlKey) {
         searchHint.value = '';
     }
