@@ -20,7 +20,6 @@ deploy:
     - npm i -g firebase-tools
   stage: deploy
   script:
-    - 
     - firebase deploy --token $FIREBASE_TOKEN
   only:
     - tags
