@@ -10,18 +10,27 @@ document.addEventListener('keydown', (e) => {
         return;
     }
 
+    console.log(e);
+
+    // if tab is pressedn and the searchfield is not empty activate shortcuts again
     if (e.code === "Tab") {
         if (searchHint.value.length !== 0) {
             input.value = searchHint.value;
         }
+        activateAllSortCuts(input);
         e.preventDefault();
     }
 
-    if (e.code === 'Backspace' && e.ctrlKey) {
+    // deactivate the current Shortcut
+    if (e.code === 'Backspace' && e.shiftKey) {
+        deactivateAllShortcuts();
         searchHint.value = '';
+        e.preventDefault();
     }
 
+    
     if (e.code === 'Backspace' && searchHint.value.length !== 0 && !(searchHint.value.length <= input.value.length)) {
+        deactivateShortcut(searchHint.value);
         searchHint.value = '';
         e.preventDefault();
         return;
@@ -29,33 +38,8 @@ document.addEventListener('keydown', (e) => {
 
 
     setTimeout(() => {
-        if (input.value.length !== 0) {
-
-            let changed = false;
-
-            if (input.value.startsWith(':')) {
-                config.commands.forEach(command => {
-                    if ((':' + command.key).startsWith(input.value)) {
-                        searchHint.value = ':' + command.key;
-                        changed = true;
-                    }
-                });
-            } else {
-                config.shortCuts.forEach(shortcut => {
-                    if (shortcut.key.startsWith(input.value)) {
-                        searchHint.value = shortcut.key;
-                        changed = true;
-                    }
-                });
-            }
-
-            if (!changed) {
-                searchHint.value = '';
-            }
-
-        } else {
-            searchHint.value = '';
-        }
+        showShortcut(input);
+        console.log(config.shortCuts);
     }, 50);
 
     if (e.key === 'Control' || e.key === 'Alt' || e.key === 'Shift') {
@@ -73,3 +57,54 @@ document.addEventListener('keydown', (e) => {
     }
     input.focus();
 });
+
+function deactivateShortcut(value) {
+    config.shortCuts.forEach(sc => {
+        if (sc.key === value) {
+            sc.stopFromSeeing = true;
+        }
+    });
+}
+
+function activateAllSortCuts(input) {
+    config.shortCuts.forEach(sc => {
+        sc.stopFromSeeing = false;
+    });
+    showShortcut(input);
+}
+
+function deactivateAllShortcuts() {
+    config.shortCuts.forEach(sc => {
+        sc.stopFromSeeing = true;
+    });
+}
+
+function showShortcut(input) {
+    if (input.value.length !== 0) {
+
+        let changed = false;
+
+        if (input.value.startsWith(':')) {
+            config.commands.forEach(command => {
+                if ((':' + command.key).startsWith(input.value)) {
+                    searchHint.value = ':' + command.key;
+                    changed = true;
+                }
+            });
+        } else {
+            config.shortCuts.forEach(shortcut => {
+                if (shortcut.key.startsWith(input.value) && !shortcut.stopFromSeeing) {
+                    searchHint.value = shortcut.key;
+                    changed = true;
+                }
+            });
+        }
+
+        if (!changed) {
+            searchHint.value = '';
+        }
+
+    } else {
+        searchHint.value = '';
+    }
+}

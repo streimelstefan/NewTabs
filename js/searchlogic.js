@@ -5,8 +5,11 @@ const input = document.getElementById('searchText');
 document.getElementById('searchForm').addEventListener('submit', (event) => {
     event.preventDefault();
 
-    if (isValidUrl('https://' + input.value)) {
+    if (validURL('https://' + input.value)) {
         window.location.href = 'https://' + input.value;
+        return;
+    } else if (validURL(input.value)) {
+        window.location.href = input.value;
         return;
     }
 
@@ -33,14 +36,16 @@ document.getElementById('searchForm').addEventListener('submit', (event) => {
     }
 });
 
-const isValidUrl = (string) => {
-    try {
-      new URL(string);
-      return true;
-    } catch (_) {
-      return false;  
-    }
+function validURL(str) {
+    var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+        '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+    return !!pattern.test(str);
 }
+
 
 function executeShortCut(query) {
     for (let i = 0; i < config.shortCuts.length; i++) {

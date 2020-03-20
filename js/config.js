@@ -12,17 +12,20 @@ if (!sc) {
         {
             key: 'g',
             url: 'https://www.google.com',
-            name: 'Google'
+            name: 'Google',
+            stopFromSeeing: false
         },
         {
             key: 'yt',
             url: 'https://www.youtube.com',
-            name: 'Youtube'
+            name: 'Youtube',
+            stopFromSeeing: false
         },
         {
             key: 'r',
             url: 'https://www.reddit.com',
-            name: 'Reddit'
+            name: 'Reddit',
+            stopFromSeeing: false
         }
     ]
 } else {
