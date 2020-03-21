@@ -9,6 +9,8 @@ deploy:
     - npm i -g firebase-tools
     - npm install @sentry/cli
     - npm install -g envsub
+    - npm install uglify-js -g
+    - npm install uglifycss -g
   stage: deploy
   script:
     - envsub -d index.html

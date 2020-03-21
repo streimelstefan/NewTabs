@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": ".",
+    "public": "chrome_extension/site/",
     "ignore": [
       "firebase.json",
       "**/.*",

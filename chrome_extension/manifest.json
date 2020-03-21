@@ -1,0 +1,23 @@
+{
+    "manifest_version": 2,
+    "name": "NewTabs",
+    "version": "1.0.0",
+    "description": "A simple yet powerfull Startingpage",
+    "permissions": [
+        "tabs"
+    ],
+    "chrome_url_overrides": {
+        "newtab": "site/index.html"
+    },
+    "background": {
+        "scripts": [
+            "background_scripts/giveFocus.js"
+        ],
+        "persistent": false
+    },
+    "icons": {
+        "16": "icons/Icon-16x16.png",
+        "48": "icons/Icon-48x48.png",
+        "128": "icons/Icon-128x128.png"
+    }
+}
