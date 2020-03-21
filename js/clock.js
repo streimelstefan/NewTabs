@@ -31,4 +31,5 @@ function updateClock() {
     clock.innerHTML = getTimeString();
 }
 
+updateClock();
 setInterval(() => {updateClock()}, 500);
