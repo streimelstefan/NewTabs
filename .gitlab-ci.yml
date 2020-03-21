@@ -13,7 +13,7 @@ deploy:
     - npm install uglifycss -g
   stage: deploy
   script:
-    - envsub -d index.html
+    - envsub -d background_scripts/site/index.html
     - ./node_modules/@sentry/cli/sentry-cli releases new $CI_COMMIT_TAG
     - ./node_modules/@sentry/cli/sentry-cli releases set-commits --auto $CI_COMMIT_TAG
     - ./node_modules/@sentry/cli/sentry-cli releases finalize "$CI_COMMIT_TAG"

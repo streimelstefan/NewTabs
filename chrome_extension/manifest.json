@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "NewTabs",
     "version": "1.0.0",
-    "description": "A simple yet powerfull Startingpage",
+    "description": "Eine einfache, aber mächtige Newtab-Seite",
     "permissions": [
         "tabs"
     ],
