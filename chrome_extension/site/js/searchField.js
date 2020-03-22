@@ -10,8 +10,6 @@ document.addEventListener('keydown', (e) => {
         return;
     }
 
-    console.log(e);
-
     // if tab is pressedn and the searchfield is not empty activate shortcuts again
     if (e.code === "Tab") {
         if (searchHint.value.length !== 0) {
@@ -39,7 +37,6 @@ document.addEventListener('keydown', (e) => {
 
     setTimeout(() => {
         showShortcut(input);
-        console.log(config.shortCuts);
     }, 50);
 
     if (e.key === 'Control' || e.key === 'Alt' || e.key === 'Shift') {

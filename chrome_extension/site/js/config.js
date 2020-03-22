@@ -1,4 +1,4 @@
-import { googleAction, yahooAction, duckduckgoAction, bingAction, standardAction, shortcutAction } from './commands.js';
+import { googleAction, yahooAction, duckduckgoAction, bingAction, standardAction, shortcutAction, backgroundAction, refreshAction } from './commands.js';
 
 let ssp = window.localStorage.getItem('ssp');
 if (!ssp) {
@@ -76,11 +76,22 @@ export const config = {
         {
             key: 'sc',
             action: shortcutAction
+        },
+        {
+            key: 'r',
+            action: refreshAction
+        },
+        {
+            key: 'bgp',
+            action: backgroundAction
         }
     ],
-    shortCuts: sc
+    shortCuts: sc,
+    useBackgroundPhoto: true,
+    lastImageGrap: window.localStorage.getItem('LIG')
 }
 
+console.log(config);
 
 export function getSearchProviderPrefix(name) {
     let prefix = null;
