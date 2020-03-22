@@ -1,4 +1,5 @@
 import { config, getSearchProviderPrefix} from "./config.js";
+import { validURL } from "./utils.js";
 
 export function googleAction(query) {
     const searchQuery = getSearchProviderPrefix('Google') + query;
@@ -42,7 +43,16 @@ export function shortcutAction(query) {
 
     if (command.length >= 3) {
         if (command[0] === 'add') {
-            config.shortCuts.push({key: command[1], url: command[2], name: command[3] || command[1]});
+            
+            if (!command[2].startsWith('http://') || command[2].startsWith('https://')) {
+                command[2] = 'http://' + command[2];
+            }
+
+            if (validURL(command[2])) {
+                config.shortCuts.push({key: command[1], url: command[2], name: command[3] || command[1]});
+            }
+
+            console.log(config.shortCuts);
         } else if (command[0] === 'remove') {
             config.shortCuts = config.shortCuts.filter(shortcut => {
                 return !(shortcut.key === command[1] ||
