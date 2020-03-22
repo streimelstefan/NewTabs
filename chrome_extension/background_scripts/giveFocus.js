@@ -3,5 +3,4 @@ chrome.tabs.onCreated.addListener(tab => {
         chrome.tabs.create({ url: chrome.extension.getURL("../site/index.html") });
         chrome.tabs.remove(tab.id);
     }
-    console.log(tab);
 });

@@ -1,5 +1,6 @@
 import { config, getSearchProviderPrefix} from "./config.js";
 import { validURL } from "./utils.js";
+import { refreshBackground } from './getBackground.js';
 
 export function googleAction(query) {
     const searchQuery = getSearchProviderPrefix('Google') + query;
@@ -44,12 +45,15 @@ export function shortcutAction(query) {
     if (command.length >= 3) {
         if (command[0] === 'add') {
             
-            if (!command[2].startsWith('http://') || command[2].startsWith('https://')) {
+            if (!command[2].startsWith('http://') || !command[2].startsWith('https://')) {
                 command[2] = 'http://' + command[2];
             }
 
+            console.log(command[2]);
+            console.log(validURL(command[2]));
             if (validURL(command[2])) {
                 config.shortCuts.push({key: command[1], url: command[2], name: command[3] || command[1]});
+                window.localStorage.setItem('sc', JSON.stringify(config.shortCuts));
             }
 
             console.log(config.shortCuts);
@@ -64,3 +68,20 @@ export function shortcutAction(query) {
         document.getElementById('searchText').value = '';
     }
 }
+
+export function backgroundAction(query) {
+    if (query.trim() === 'on') {
+        config.useBackgroundPhoto = true;
+        refreshBackground();
+        document.getElementById('searchText').value = '';
+    } else if (query.trim() === 'off') {
+        config.useBackgroundPhoto = false;
+        document.querySelector('body').style.backgroundImage = '';
+        document.getElementById('searchText').value = '';
+    }
+} 
+
+export function refreshAction(query) {
+    refreshBackground();
+    document.getElementById('searchText').value = '';
+} 
