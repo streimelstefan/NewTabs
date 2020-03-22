@@ -45,7 +45,8 @@ export function shortcutAction(query) {
     if (command.length >= 3) {
         if (command[0] === 'add') {
             
-            if (!command[2].startsWith('http://') || !command[2].startsWith('https://')) {
+            console.log(command[2]);
+            if (!command[2].startsWith('http://') && !command[2].startsWith('https://')) {
                 command[2] = 'http://' + command[2];
             }
 
