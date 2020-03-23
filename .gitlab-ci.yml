@@ -24,8 +24,7 @@ build:
 deploy-web:
   before_script:
   - npm i -g firebase-tools
-  stage:
-  - deploy
+  stage: deploy
   script:
   - cat chrome_extension/manifest.json
   only:
