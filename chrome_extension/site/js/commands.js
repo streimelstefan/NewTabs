@@ -36,7 +36,7 @@ export function standardAction(query) {
         }
     });
 
-    window.localStorage.setItem('ssp', config.standadSearchProvider);
+    chrome.storage.sync.set({ssp: config.standadSearchProvider});
 }
 
 export function shortcutAction(query) {
@@ -54,7 +54,7 @@ export function shortcutAction(query) {
             console.log(validURL(command[2]));
             if (validURL(command[2])) {
                 config.shortCuts.push({key: command[1], url: command[2], name: command[3] || command[1]});
-                window.localStorage.setItem('sc', JSON.stringify(config.shortCuts));
+                chrome.storage.sync.set({sc: config.shortCuts});
             }
 
             console.log(config.shortCuts);
@@ -65,7 +65,19 @@ export function shortcutAction(query) {
                          shortcut.url == command[1]);
             });
         }
-        window.localStorage.setItem('sc', JSON.stringify(config.shortCuts));
+        chrome.storage.sync.set({sc: config.shortCuts});
+        document.getElementById('searchText').value = '';
+    }
+}
+
+export function backgroundAction(query) {
+    if (query.trim() === 'on') {
+        config.useBackgroundPhoto = true;
+        refreshBackground();
+        document.getElementById('searchText').value = '';
+    } else if (query.trim() === 'off') {
+        config.useBackgroundPhoto = false;
+        document.querySelector('body').style.backgroundImage = '';
         document.getElementById('searchText').value = '';
     }
 }

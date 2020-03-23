@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "NewTabs",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Eine einfache, aber mächtige Newtab-Seite",
     "permissions": [
         "tabs",
