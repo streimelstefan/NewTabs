@@ -1,6 +1,11 @@
 import { googleAction, yahooAction, duckduckgoAction, bingAction, standardAction, shortcutAction, backgroundAction, refreshAction } from './commands.js';
 import { initBackground } from './getBackground.js';
 
+Sentry.init({ 
+    dsn: 'https://a3587e3b77964656bdf5942aaf34f1f6@sentry.streimel.com/5',
+    release: 'newtabs@${CI_COMMIT_TAG}' // In the ci process this will be set to the App version
+});
+
 export const config = {
     searchproviders: [
         {
@@ -63,14 +68,15 @@ export const config = {
 console.log("lul");
 
 chrome.storage.sync.get(['ssp', 'sc'], (items) => {
-    if (!items.ssp) {
-        const ssp = 'Google';
+    let ssp = items.ssp;
+    let sc = items.sc;
+    if (!ssp) {
+        ssp = 'Google';
         chrome.storage.sync.set({ssp: ssp});
-        config.standadSearchProvider = ssp;
     }
 
-    if (!items.sc) {
-        const sc = [
+    if (!sc) {
+        sc = [
             {
                 key: 'g',
                 url: 'https://www.google.com',
@@ -92,11 +98,10 @@ chrome.storage.sync.get(['ssp', 'sc'], (items) => {
         ]
 
         chrome.storage.sync.set({sc: sc});
-        config.shortCuts = sc;
     }
 
-    config.standadSearchProvider = items.ssp;
-    config.shortCuts = items.sc;
+    config.standadSearchProvider = ssp;
+    config.shortCuts = sc;
     console.log(config);
 });
 

@@ -1,22 +1,40 @@
 stages: 
-  - build
-  - deploy
+- build
+- deploy
 
 image: node:12.13.0-alpine
 
-deploy:
-  before_script:
-    - npm i -g firebase-tools
-    - npm install @sentry/cli
-    - npm install -g envsub
-    - npm install uglify-js -g
-    - npm install uglifycss -g
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+  - .npm/
+  
+before_script:
+- npm install @sentry/cli
+- npm install -g envsub
+- npm install uglify-js -g
+- npm install uglifycss -g
+- npm i -g firebase-tools
+
+build:
+  stage: build
+  artifacts: 
+    paths:
+    - chrome_extension/
+  script:
+  - envsub -d chrome_extension/site/js/config.js
+  - sed -i 's/1.1.3/${CI_COMMIT_TAG}/g' chrome_extension/manifest.json
+  - envsub -d chrome_extension/manifest.json
+  - ./node_modules/@sentry/cli/sentry-cli releases new $CI_COMMIT_TAG
+  - ./node_modules/@sentry/cli/sentry-cli releases set-commits --auto $CI_COMMIT_TAG
+  - ./node_modules/@sentry/cli/sentry-cli releases finalize "$CI_COMMIT_TAG"
+  only:
+  - tags
+
+deploy-web:
   stage: deploy
   script:
-    - envsub -d chrome_extension/site/index.html
-    - ./node_modules/@sentry/cli/sentry-cli releases new $CI_COMMIT_TAG
-    - ./node_modules/@sentry/cli/sentry-cli releases set-commits --auto $CI_COMMIT_TAG
-    - ./node_modules/@sentry/cli/sentry-cli releases finalize "$CI_COMMIT_TAG"
-    - firebase deploy --token $FIREBASE_TOKEN
+  - firebase deploy --token $FIREBASE_TOKEN
   only:
-    - tags
+  - tags
+  
