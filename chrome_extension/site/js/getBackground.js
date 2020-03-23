@@ -12,12 +12,12 @@ function loadImage( url, callback ){
     var reader = new FileReader();
         reader.onloadend = function () {
             chrome.storage.local.set( { Image : reader.result } );
+            chrome.storage.local.set({LIG: new Date()});
             if (callback) {
                 callback();
             }
         };
     imgxhr.send();
-    chrome.storage.local.set({LIG: new Date()});
 }
 
 function addBackgroundImg() {
@@ -39,13 +39,17 @@ export function initBackground() {
             if (today.getTime() - new Date(config.lastImageGrap).getTime() > 86400000) {
                 console.log("Yesterday");
                 
-                loadImage(url, null);
+                loadImage(url, () => {
+                    addBackgroundImg();
+                });
+                return;
             }
         } else {
-            loadImage(url, null);
+            loadImage(url, () => {                
+                addBackgroundImg();
+            });
+            return;
         }
-        
-        addBackgroundImg();
     }
 }
 
