@@ -73,10 +73,12 @@ export function shortcutAction(query) {
 export function backgroundAction(query) {
     if (query.trim() === 'on') {
         config.useBackgroundPhoto = true;
+        chrome.storage.sync.set({ubp: true});
         refreshBackground();
         document.getElementById('searchText').value = '';
     } else if (query.trim() === 'off') {
         config.useBackgroundPhoto = false;
+        chrome.storage.sync.set({ubp: false});
         document.querySelector('body').style.backgroundImage = '';
         document.getElementById('searchText').value = '';
     }

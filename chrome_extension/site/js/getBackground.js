@@ -32,24 +32,29 @@ export function initBackground() {
         const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
         const url = "https://picsum.photos/" + vw + "/" + vh + "?grayscale"
         console.log(url);
-        if (config.lastImageGrap) {
-            let today = new Date();
-            console.log(config.lastImageGrap);
-            
-            if (today.getTime() - new Date(config.lastImageGrap).getTime() > 86400000) {
-                console.log("Yesterday");
+        chrome.storage.local.get(['LIG'], (item) => {
+
+            if (item.LIG) {
+                let today = new Date();
+                console.log(item.LIG);
                 
-                loadImage(url, () => {
+                if (today.getTime() - new Date(item.LIG).getTime() > 86400000) {
+                    console.log("Yesterday");
+                    
+                    loadImage(url, () => {
+                        addBackgroundImg();
+                    });
+                    return;
+                } else {
+                    addBackgroundImg();
+                }
+            } else {
+                loadImage(url, () => {                
                     addBackgroundImg();
                 });
                 return;
             }
-        } else {
-            loadImage(url, () => {                
-                addBackgroundImg();
-            });
-            return;
-        }
+        });
     }
 }
 

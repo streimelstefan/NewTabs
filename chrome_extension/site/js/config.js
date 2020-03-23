@@ -61,15 +61,15 @@ export const config = {
         }
     ],
     shortCuts: [],
-    useBackgroundPhoto: true,
-    lastImageGrap: null
+    useBackgroundPhoto: true
 }
 
 console.log("lul");
 
-chrome.storage.sync.get(['ssp', 'sc'], (items) => {
+chrome.storage.sync.get(['ssp', 'sc', 'ubp'], (items) => {
     let ssp = items.ssp;
     let sc = items.sc;
+    let ubp = items.ubp;
     if (!ssp) {
         ssp = 'Google';
         chrome.storage.sync.set({ssp: ssp});
@@ -100,14 +100,17 @@ chrome.storage.sync.get(['ssp', 'sc'], (items) => {
         chrome.storage.sync.set({sc: sc});
     }
 
+    if (!ubp) {
+        ubp = true;
+
+        chrome.storage.sync.set({ubp: ubp});
+    }
+
     config.standadSearchProvider = ssp;
     config.shortCuts = sc;
-    console.log(config);
-});
-
-chrome.storage.local.get(['LIG'], items => {
-    config.lastImageGrap = items.LIG;
+    config.useBackgroundPhoto = ubp;
     initBackground();
+    console.log(config);
 });
 
 
