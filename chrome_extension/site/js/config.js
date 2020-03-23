@@ -113,7 +113,9 @@ chrome.storage.sync.get(['ssp', 'sc', 'ubp'], (items) => {
     console.log(config);
 });
 
-
+setInterval(() => {
+    console.log(config);
+}, 1000);
 
 export function getSearchProviderPrefix(name) {
     let prefix = null;

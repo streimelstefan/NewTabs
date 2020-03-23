@@ -1,5 +1,5 @@
 import { config, getSearchProviderPrefix} from "./config.js";
-import { validURL } from "./utils.js";
+import { validURL, getTopDomain } from "./utils.js";
 import { refreshBackground } from './getBackground.js';
 
 export function googleAction(query) {
@@ -41,6 +41,9 @@ export function standardAction(query) {
 
 export function shortcutAction(query) {
     const command = query.split(' ');
+       
+    console.log("inserted command: ");
+    console.log(command);
 
     if (command.length >= 3) {
         if (command[0] === 'add') {
@@ -50,23 +53,44 @@ export function shortcutAction(query) {
                 command[2] = 'http://' + command[2];
             }
 
-            console.log(command[2]);
-            console.log(validURL(command[2]));
             if (validURL(command[2])) {
                 config.shortCuts.push({key: command[1], url: command[2], name: command[3] || command[1]});
-                chrome.storage.sync.set({sc: config.shortCuts});
+                chrome.storage.sync.set({sc: config.shortCuts});                    
+                document.getElementById('searchText').value = '';
+            } else {
+                return;
             }
 
-            console.log(config.shortCuts);
+        }
+    } else if (command.length === 2) {
+        
+        if (command[0] === 'add') {
+            if (validURL(command[1]) || validURL("http://" + command[1])) {
+
+                let domain = command[1].replace('http://', '');
+                domain = domain.replace('https://', '');
+                if (domain.indexOf('/') !== -1) {
+                    domain = domain.slice(0, domain.indexOf('/'));
+                }
+
+                const topLvlDomain = getTopDomain(domain);
+
+                if (topLvlDomain) {
+                    config.shortCuts.push({key: topLvlDomain, url: command[1], name: topLvlDomain});
+                    chrome.storage.sync.set({sc: config.shortCuts});
+                    document.getElementById('searchText').value = '';
+                }
+            }
         } else if (command[0] === 'remove') {
             config.shortCuts = config.shortCuts.filter(shortcut => {
                 return !(shortcut.key === command[1] ||
-                         shortcut.name === command[1] ||
-                         shortcut.url == command[1]);
-            });
+                            shortcut.name === command[1] ||
+                            shortcut.url == command[1]);
+                        });
+            chrome.storage.sync.set({sc: config.shortCuts});
+            document.getElementById('searchText').value = '';
         }
-        chrome.storage.sync.set({sc: config.shortCuts});
-        document.getElementById('searchText').value = '';
+
     }
 }
 

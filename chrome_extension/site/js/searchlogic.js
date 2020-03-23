@@ -53,9 +53,11 @@ function executeShortCut(query) {
 function concatStringArray(array, start) {
     let string = '';
 
-    for (let i = start; i < array.length; i++) {
+    for (let i = start; i < array.length - 1; i++) {
         string += array[i] + ' ';
     }
+
+    string += array[array.length - 1];
 
     return string;
 }
