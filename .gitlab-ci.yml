@@ -18,8 +18,6 @@ build:
   - ./node_modules/@sentry/cli/sentry-cli releases new $CI_COMMIT_TAG
   - ./node_modules/@sentry/cli/sentry-cli releases set-commits --auto $CI_COMMIT_TAG
   - ./node_modules/@sentry/cli/sentry-cli releases finalize "$CI_COMMIT_TAG"
-  only:
-  - tags
 
 deploy-web:
   before_script:
@@ -27,5 +25,3 @@ deploy-web:
   stage: deploy
   script:
   - cat chrome_extension/manifest.json
-  only:
-  - tags
