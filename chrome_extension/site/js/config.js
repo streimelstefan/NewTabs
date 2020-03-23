@@ -1,6 +1,11 @@
 import { googleAction, yahooAction, duckduckgoAction, bingAction, standardAction, shortcutAction, backgroundAction, refreshAction } from './commands.js';
 import { initBackground } from './getBackground.js';
 
+Sentry.init({ 
+    dsn: 'https://a3587e3b77964656bdf5942aaf34f1f6@sentry.streimel.com/5',
+    release: 'newtabs@${CI_COMMIT_TAG}' // In the ci process this will be set to the App version
+});
+
 export const config = {
     searchproviders: [
         {
