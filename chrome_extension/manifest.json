@@ -20,5 +20,6 @@
         "16": "icons/Icon-16x16.png",
         "48": "icons/Icon-48x48.png",
         "128": "icons/Icon-128x128.png"
-    }
+    },
+    "content_security_policy": "script-src 'self' https://browser.sentry-cdn.com/5.12.1/bundle.min.js 'sha256-hSnINRaDHJuGavrYN4sRcmxWCKensRaww3J1l3p+3kI='; object-src 'self'"
 }
