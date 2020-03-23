@@ -1,7 +1,5 @@
 import { config } from "./config.js";
 
-console.log('lul2');
-
 function loadImage( url, callback ){
     var imgxhr = new XMLHttpRequest();
         imgxhr.open( "GET", url + "?" + new Date().getTime() );

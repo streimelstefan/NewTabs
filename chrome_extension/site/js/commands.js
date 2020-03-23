@@ -80,6 +80,18 @@ export function backgroundAction(query) {
         document.querySelector('body').style.backgroundImage = '';
         document.getElementById('searchText').value = '';
     }
+}
+
+export function backgroundAction(query) {
+    if (query.trim() === 'on') {
+        config.useBackgroundPhoto = true;
+        refreshBackground();
+        document.getElementById('searchText').value = '';
+    } else if (query.trim() === 'off') {
+        config.useBackgroundPhoto = false;
+        document.querySelector('body').style.backgroundImage = '';
+        document.getElementById('searchText').value = '';
+    }
 } 
 
 export function refreshAction(query) {
