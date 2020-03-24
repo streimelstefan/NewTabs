@@ -1,6 +1,7 @@
 import { config, getSearchProviderPrefix} from "./config.js";
 import { validURL, getTopDomain } from "./utils.js";
 import { refreshBackground } from './getBackground.js';
+import { showInfoToast, showErrorToastSimple, showErrorToast } from './com.js';
 
 export function googleAction(query) {
     const searchQuery = getSearchProviderPrefix('Google') + query;
@@ -29,26 +30,31 @@ export function bingAction(query) {
 export function standardAction(query) {
     query = query.replace(/ /g,'');
 
+    let found = false;
+
     config.searchproviders.forEach(provider => {
         if (provider.name.toUpperCase() === query.toUpperCase()) {
             config.standadSearchProvider = provider.name;
             document.getElementById('searchText').value = '';
+            showInfoToast(`${provider.name} ist nun Ihre Standardsuchmaschiene!`);
+            found = true;
+            return;
         }
     });
+
+    if (!found) {
+        showErrorToastSimple(`Es konnte keine Suchmaschiene mit dem Namen ${query} gefunden werden!`);
+    }
 
     chrome.storage.sync.set({ssp: config.standadSearchProvider});
 }
 
 export function shortcutAction(query) {
     const command = query.split(' ');
-       
-    console.log("inserted command: ");
-    console.log(command);
 
     if (command.length >= 3) {
         if (command[0] === 'add') {
             
-            console.log(command[2]);
             if (!command[2].startsWith('http://') && !command[2].startsWith('https://')) {
                 command[2] = 'http://' + command[2];
             }
@@ -57,8 +63,9 @@ export function shortcutAction(query) {
                 config.shortCuts.push({key: command[1], url: command[2], name: command[3] || command[1]});
                 chrome.storage.sync.set({sc: config.shortCuts});                    
                 document.getElementById('searchText').value = '';
+                showInfoToast(`Shortcut hinzugefügt!`);
             } else {
-                return;
+                showErrorToastSimple('Die URL die Sie angegeben haben ist nicht correct!');
             }
 
         }
@@ -79,18 +86,31 @@ export function shortcutAction(query) {
                     config.shortCuts.push({key: topLvlDomain, url: command[1], name: topLvlDomain});
                     chrome.storage.sync.set({sc: config.shortCuts});
                     document.getElementById('searchText').value = '';
+                    showInfoToast(`Shortcut wurde erstellt! KEY = ${topLvlDomain}`);
+                } else {
+                    showErrorToastSimple('Konnte KEY nicht aus URL erstellen bitte geben Sie den KEY seperat an!');
                 }
+            } else {
+                showErrorToastSimple('Die von Ihnen angegebene URL ist nicht richtig!');
             }
         } else if (command[0] === 'remove') {
             config.shortCuts = config.shortCuts.filter(shortcut => {
-                return !(shortcut.key === command[1] ||
-                            shortcut.name === command[1] ||
-                            shortcut.url == command[1]);
-                        });
+                    const result = !(shortcut.key === command[1] ||
+                                     shortcut.name === command[1] ||
+                                    shortcut.url == command[1]);
+
+                    if (!result) {
+                        showInfoToast(`Shortcut ${shortcut.name} wurde entfernt`);
+                    }
+
+                    return result;
+                })
             chrome.storage.sync.set({sc: config.shortCuts});
             document.getElementById('searchText').value = '';
         }
 
+    } else {
+        showErrorToastSimple('Um einen Shortcut hinzu zufügen müssens Sie den Command so Schreiben: :sc add KEY URL');
     }
 }
 
@@ -100,15 +120,20 @@ export function backgroundAction(query) {
         chrome.storage.sync.set({ubp: true});
         refreshBackground();
         document.getElementById('searchText').value = '';
+        showInfoToast('Hintergrund Photos wurden eingeschalten');
     } else if (query.trim() === 'off') {
         config.useBackgroundPhoto = false;
         chrome.storage.sync.set({ubp: false});
         document.querySelector('body').style.backgroundImage = '';
         document.getElementById('searchText').value = '';
+        showInfoToast('Hintergrund Photos wurden ausgeschalten!');
+    } else {
+        showErrorToastSimple(`Unbekannte eingabe: ${query}! Bitte geben Sie entweder "on/off" ein`);
     }
 }
 
 export function refreshAction(query) {
     refreshBackground();
     document.getElementById('searchText').value = '';
+    showInfoToast('Es wird einen neues Bild heruntergeladen bitte etwas gedult!');
 } 

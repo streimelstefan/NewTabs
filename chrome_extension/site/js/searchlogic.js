@@ -1,5 +1,6 @@
 import { config, getSearchProviderPrefix} from "./config.js";
 import { validURL } from "./utils.js";
+import { showErrorToastSimple } from "./com.js";
 
 const input = document.getElementById('searchText');
 
@@ -20,11 +21,19 @@ document.getElementById('searchForm').addEventListener('submit', (event) => {
         const command = query.replace(':', '').split(' ')[0];
         const param = concatStringArray(query.split(' '), 1);
 
+        let foundCommand = false;
+
         config.commands.forEach(configCommand => {
             if (configCommand.key === command) {
                 configCommand.action(param);
+                foundCommand = true;
+                return;
             }
-        })
+        });
+
+        if (!foundCommand) {
+            showErrorToastSimple(`Es konnte kein Command für "${command}" gefunden werden`)
+        }
 
     } else {
         // if there is a coresponding Shortcut move there.
@@ -54,10 +63,16 @@ function concatStringArray(array, start) {
     let string = '';
 
     for (let i = start; i < array.length - 1; i++) {
-        string += array[i] + ' ';
+        if (array[i].length > 0) {
+            string += array[i] + ' ';
+        }
     }
 
-    string += array[array.length - 1];
+    if (array[array.length - 1].length > 0) {
+        string += array[array.length - 1];
+    } else {
+        string.substring(0, string.length - 1);
+    }
 
     return string;
 }

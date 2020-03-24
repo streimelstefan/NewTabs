@@ -35,6 +35,18 @@ export function showErrorToast(text, callback) {
         }, 450);
     });
 
+    setTimeout(() => {
+        toast.classList.add('dismiss');
+
+        setTimeout(() => {
+            body.removeChild(toast);
+        }, 450);
+    }, 5000);   
+
     const body = document.querySelector('body');
     body.appendChild(toast);
+}
+
+export function showErrorToastSimple(text) {
+    showErrorToast(text, () => {});
 }

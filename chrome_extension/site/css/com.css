@@ -62,7 +62,7 @@
 .errorToastText {
   flex-grow: 4;
   padding: 1em;
-  padding-right: 0px;
+  padding-right: .25em;
   
   align-self: flex-start;
 }
@@ -70,6 +70,7 @@
 .errorToastButton {
   align-self: flex-end;
   padding: 1em;
+
 }
 
 .errorToastButton:hover {

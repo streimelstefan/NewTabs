@@ -64,7 +64,6 @@ export const config = {
     useBackgroundPhoto: true
 }
 
-console.log("lul");
 
 chrome.storage.sync.get(['ssp', 'sc', 'ubp'], (items) => {
     let ssp = items.ssp;
@@ -110,7 +109,6 @@ chrome.storage.sync.get(['ssp', 'sc', 'ubp'], (items) => {
     config.shortCuts = sc;
     config.useBackgroundPhoto = ubp;
     initBackground();
-    console.log(config);
 });
 
 export function getSearchProviderPrefix(name) {

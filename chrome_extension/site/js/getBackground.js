@@ -31,15 +31,12 @@ export function initBackground() {
         const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
         const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
         const url = "https://picsum.photos/" + vw + "/" + vh + "?grayscale"
-        console.log(url);
         chrome.storage.local.get(['LIG'], (item) => {
 
             if (item.LIG) {
                 let today = new Date();
-                console.log(item.LIG);
                 
                 if (today.getTime() - new Date(item.LIG).getTime() > 86400000) {
-                    console.log("Yesterday");
                     
                     loadImage(url, () => {
                         addBackgroundImg();
@@ -62,7 +59,6 @@ export function refreshBackground() {
     const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     const url = "https://picsum.photos/" + vw + "/" + vh + "?grayscale"
-    console.log("refreshing");
     loadImage(url, () => {
         addBackgroundImg()
     });
