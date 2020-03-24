@@ -29,35 +29,43 @@ export const config = {
     commands: [
         {
             key: 'g',
-            action: googleAction
+            action: googleAction,
+            stopFromSeeing: false
         },
         {
             key: 'y',
-            action: yahooAction
+            action: yahooAction,
+            stopFromSeeing: false
         },
         {
             key: 'd',
-            action: duckduckgoAction
+            action: duckduckgoAction,
+            stopFromSeeing: false
         },
         {
             key: 'b',
-            action: bingAction
-        },
-        {
-            key: 'standard',
-            action: standardAction
-        }, 
-        {
-            key: 'sc',
-            action: shortcutAction
+            action: bingAction,
+            stopFromSeeing: false
         },
         {
             key: 'r',
-            action: refreshAction
+            action: refreshAction,
+            stopFromSeeing: false
         },
         {
             key: 'bgp',
-            action: backgroundAction
+            action: backgroundAction,
+            stopFromSeeing: false
+        },
+        {
+            key: 'standard',
+            action: standardAction,
+            stopFromSeeing: false
+        }, 
+        {
+            key: 'sc',
+            action: shortcutAction,
+            stopFromSeeing: false
         }
     ],
     shortCuts: [],
@@ -66,6 +74,11 @@ export const config = {
 
 
 chrome.storage.sync.get(['ssp', 'sc', 'ubp'], (items) => {
+    Sentry.addBreadcrumb({
+        category: 'startup',
+        message: 'Parsing users config',
+        levle: Sentry.Severity.Info 
+    });
     let ssp = items.ssp;
     let sc = items.sc;
     let ubp = items.ubp;
@@ -108,6 +121,17 @@ chrome.storage.sync.get(['ssp', 'sc', 'ubp'], (items) => {
     config.standadSearchProvider = ssp;
     config.shortCuts = sc;
     config.useBackgroundPhoto = ubp;
+
+    Sentry.addBreadcrumb({
+        category: 'startup',
+        message: 'Finished parsing users config',
+        data: {
+            standardSearchProvider: ssp,
+            shortCuts: sc,
+            useBackgroundPhoto: ubp
+        },
+        levle: Sentry.Severity.Info 
+    });
     initBackground();
 });
 
@@ -118,5 +142,16 @@ export function getSearchProviderPrefix(name) {
             prefix = provider.searchPrefix;
         }
     });
+    if (prefix === null) {
+        Sentry.addBreadcrumb({
+            category: 'search',
+            message: 'Was not able to find a coresponding Searchprovider prefix',
+            level: Sentry.Severity.error,
+            data: {
+                askedProviderName: name,
+                registeredSearchProviders: config.searchproviders
+            }
+        })
+    }
     return prefix;
 }

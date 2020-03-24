@@ -15,20 +15,22 @@ document.addEventListener('keydown', (e) => {
         if (searchHint.value.length !== 0) {
             input.value = searchHint.value;
         }
-        activateAllSortCuts(input);
+        activateAllAutocompletes();
+        showShortcut(input);
+
         e.preventDefault();
     }
 
     // deactivate the current Shortcut
     if (e.code === 'Backspace' && e.shiftKey) {
-        deactivateAllShortcuts();
+        deactivateAllAutocompletes();
         searchHint.value = '';
         e.preventDefault();
+        return;
     }
-
     
     if (e.code === 'Backspace' && searchHint.value.length !== 0 && !(searchHint.value.length <= input.value.length)) {
-        deactivateShortcut(searchHint.value);
+        deactivateAutocomplete(searchHint.value);
         searchHint.value = '';
         e.preventDefault();
         return;
@@ -61,27 +63,43 @@ input.addEventListener('focusout', () => {
         clock.style.display = 'block';
         form.style.display = 'none';
     }
+    activateAllAutocompletes();
 })
 
-function deactivateShortcut(value) {
+function deactivateAutocomplete(value) {
+    let found = false;
     config.shortCuts.forEach(sc => {
         if (sc.key === value) {
             sc.stopFromSeeing = true;
+            found = false;
         }
     });
+
+    if (!found) {
+        config.commands.forEach(com => {
+            if (com.key === value) {
+                com.stopFromSeeing = true;
+            }
+        })
+    }
 }
 
-function activateAllSortCuts(input) {
+function activateAllAutocompletes() {
     config.shortCuts.forEach(sc => {
         sc.stopFromSeeing = false;
     });
-    showShortcut(input);
+    config.commands.forEach(com => {
+        com.stopFromSeeing = false;
+    })
 }
 
-function deactivateAllShortcuts() {
+function deactivateAllAutocompletes() {
     config.shortCuts.forEach(sc => {
         sc.stopFromSeeing = true;
     });
+    config.commands.forEach(com => {
+        com.stopFromSeeing = true;
+    })
 }
 
 function showShortcut(input) {
@@ -91,7 +109,7 @@ function showShortcut(input) {
 
         if (input.value.startsWith(':')) {
             config.commands.forEach(command => {
-                if ((':' + command.key).startsWith(input.value)) {
+                if ((':' + command.key).startsWith(input.value)  && !command.stopFromSeeing) {
                     searchHint.value = ':' + command.key;
                     changed = true;
                 }

@@ -3,6 +3,7 @@
 body {
     background-color: hsl(204, 12%, 25%);
     font-family: 'Oswald', sans-serif;
+    background-repeat: no-repeat;
 }
 
 .center-screen {   
