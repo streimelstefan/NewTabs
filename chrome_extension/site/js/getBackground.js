@@ -31,25 +31,27 @@ export function initBackground() {
         const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
         const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
         const url = "https://picsum.photos/" + vw + "/" + vh + "?grayscale"
-        console.log(url);
-        if (config.lastImageGrap) {
-            let today = new Date();
-            console.log(config.lastImageGrap);
-            
-            if (today.getTime() - new Date(config.lastImageGrap).getTime() > 86400000) {
-                console.log("Yesterday");
+        chrome.storage.local.get(['LIG'], (item) => {
+
+            if (item.LIG) {
+                let today = new Date();
                 
-                loadImage(url, () => {
+                if (today.getTime() - new Date(item.LIG).getTime() > 86400000) {
+                    
+                    loadImage(url, () => {
+                        addBackgroundImg();
+                    });
+                    return;
+                } else {
+                    addBackgroundImg();
+                }
+            } else {
+                loadImage(url, () => {                
                     addBackgroundImg();
                 });
                 return;
             }
-        } else {
-            loadImage(url, () => {                
-                addBackgroundImg();
-            });
-            return;
-        }
+        });
     }
 }
 
@@ -57,7 +59,6 @@ export function refreshBackground() {
     const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     const url = "https://picsum.photos/" + vw + "/" + vh + "?grayscale"
-    console.log("refreshing");
     loadImage(url, () => {
         addBackgroundImg()
     });

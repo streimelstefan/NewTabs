@@ -55,6 +55,14 @@ document.addEventListener('keydown', (e) => {
     input.focus();
 });
 
+input.addEventListener('focusout', () => {
+    let value = input.value.replace(/ /g,'');
+    if (value.length < 1) {
+        clock.style.display = 'block';
+        form.style.display = 'none';
+    }
+})
+
 function deactivateShortcut(value) {
     config.shortCuts.forEach(sc => {
         if (sc.key === value) {
