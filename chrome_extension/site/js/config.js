@@ -99,7 +99,7 @@ chrome.storage.sync.get(['ssp', 'sc', 'ubp'], (items) => {
         chrome.storage.sync.set({sc: sc});
     }
 
-    if (!ubp) {
+    if (!ubp && ubp !== false) {
         ubp = true;
 
         chrome.storage.sync.set({ubp: ubp});
