@@ -56,7 +56,8 @@ document.addEventListener('keydown', (e) => {
 });
 
 input.addEventListener('focusout', () => {
-    if (input.value.length < 1) {
+    let value = input.value.replace(/ /g,'');
+    if (value.length < 1) {
         clock.style.display = 'block';
         form.style.display = 'none';
     }
