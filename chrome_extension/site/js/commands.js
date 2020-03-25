@@ -60,7 +60,7 @@ export function shortcutAction(query) {
             }
 
             if (validURL(command[2])) {
-                config.shortCuts.push({key: command[1], url: command[2], name: command[3] || command[1]});
+                config.shortCuts.push({key: command[1], url: command[2], category: command[3] || null, name: command[4] || command[1]});
                 chrome.storage.sync.set({sc: config.shortCuts});                    
                 document.getElementById('searchText').value = '';
                 showInfoToast(`Shortcut hinzugefügt!`);
