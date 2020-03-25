@@ -1,5 +1,6 @@
 import { googleAction, yahooAction, duckduckgoAction, bingAction, standardAction, shortcutAction, backgroundAction, refreshAction } from './commands.js';
 import { initBackground } from './getBackground.js';
+import { removeCategories } from './shortcutCategories.js';
 
 Sentry.init({ 
     dsn: 'https://a3587e3b77964656bdf5942aaf34f1f6@sentry.streimel.com/5',
@@ -93,19 +94,22 @@ chrome.storage.sync.get(['ssp', 'sc', 'ubp'], (items) => {
                 key: 'g',
                 url: 'https://www.google.com',
                 name: 'Google',
-                stopFromSeeing: false
+                stopFromSeeing: false,
+                category: null
             },
             {
                 key: 'yt',
                 url: 'https://www.youtube.com',
                 name: 'Youtube',
-                stopFromSeeing: false
+                stopFromSeeing: false,
+                category: 'stuff'
             },
             {
                 key: 'r',
                 url: 'https://www.reddit.com',
                 name: 'Reddit',
-                stopFromSeeing: false
+                stopFromSeeing: false,
+                category: null
             }
         ]
 
@@ -133,6 +137,7 @@ chrome.storage.sync.get(['ssp', 'sc', 'ubp'], (items) => {
         levle: Sentry.Severity.Info 
     });
     initBackground();
+    removeCategories();
 });
 
 export function getSearchProviderPrefix(name) {

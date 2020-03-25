@@ -1,4 +1,6 @@
 import { config } from "./config.js";
+import { displayCategories, removeCategories } from './shortcutCategories.js';
+
 
 const input = document.getElementById('searchText');
 const form = document.getElementById('command-field');
@@ -49,12 +51,20 @@ document.addEventListener('keydown', (e) => {
         if (input.value === '' && e.code === "Backspace") {
             clock.style.display = 'block';
             form.style.display = 'none';
+            removeCategories();
         }
     } else {
         clock.style.display = 'none';
         form.style.display = 'inline';
+        removeCategories();
     }
     input.focus();
+});
+
+clock.addEventListener('click', () => {
+    clock.style.display = 'none';
+    form.style.display = 'none';
+    displayCategories();
 });
 
 input.addEventListener('focusout', () => {
@@ -62,9 +72,16 @@ input.addEventListener('focusout', () => {
     if (value.length < 1) {
         clock.style.display = 'block';
         form.style.display = 'none';
+        removeCategories();
     }
     activateAllAutocompletes();
-})
+});
+
+document.querySelector('.shortcut-category-close').addEventListener('click', () => {
+    clock.style.display = 'block';
+    form.style.display = 'none';
+    removeCategories();
+});
 
 function deactivateAutocomplete(value) {
     let found = false;
