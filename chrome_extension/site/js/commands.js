@@ -60,7 +60,7 @@ export function shortcutAction(query) {
             }
 
             if (validURL(command[2])) {
-                config.shortCuts.push({key: command[1], url: command[2], name: command[3] || command[1]});
+                config.shortCuts.push({key: command[1], url: command[2], category: command[3] || null, color: command[4] || null, name: command[5] || command[1]});
                 chrome.storage.sync.set({sc: config.shortCuts});                    
                 document.getElementById('searchText').value = '';
                 showInfoToast(`Shortcut hinzugefügt!`);
@@ -83,7 +83,7 @@ export function shortcutAction(query) {
                 const topLvlDomain = getTopDomain(domain);
 
                 if (topLvlDomain) {
-                    config.shortCuts.push({key: topLvlDomain, url: command[1], name: topLvlDomain});
+                    config.shortCuts.push({key: topLvlDomain, url: command[1], name: topLvlDomain, category: null, color: null});
                     chrome.storage.sync.set({sc: config.shortCuts});
                     document.getElementById('searchText').value = '';
                     showInfoToast(`Shortcut wurde erstellt! KEY = ${topLvlDomain}`);
@@ -128,7 +128,7 @@ export function backgroundAction(query) {
         document.getElementById('searchText').value = '';
         showInfoToast('Hintergrund Photos wurden ausgeschalten!');
     } else {
-        showErrorToastSimple(`Unbekannte eingabe: ${query}! Bitte geben Sie entweder "on/off" ein`);
+        showErrorToastSimple(`Unbekannter Befehl: ${query}! Bitte geben Sie entweder "on/off" ein`);
     }
 }
 
@@ -137,3 +137,67 @@ export function refreshAction(query) {
     document.getElementById('searchText').value = '';
     showInfoToast('Es wird einen neues Bild heruntergeladen bitte etwas gedult!');
 } 
+
+export function editAction(query) {
+    const command = query.split(' ');
+    let found = false;
+    let edited = false;
+    if (command.length === 3) {
+        
+        for (let i = 0; i < config.shortCuts.length; i++) {
+            if (config.shortCuts[i].name === command[0]) {
+                found = true;
+
+                switch (command[1]) {
+                    case 'key':    
+                        config.shortCuts[i].key = command[2];
+                        edited = true;
+                        showInfoToast(`Der Key von ${command[0]} wurde auf ${command[2]} gesetzt!`);
+                        break;
+                    case 'url':
+                        if (!command[2].startsWith('http://') && !command[2].startsWith('https://')) {
+                            command[2] = 'http://' + command[2];
+                        }
+
+                        config.shortCuts[i].url = command[2];
+                        edited = true;
+                        showInfoToast(`Die URL von ${command[0]} wurde auf ${command[2]} gesetzt!`);
+                        break;
+
+                    case 'name':
+                        config.shortCuts[i].name = command[2];
+                        edited = true;
+                        showInfoToast(`Der Name von ${command[0]} wurde auf ${command[2]} gesetzt!`);
+                        break;
+
+                    case 'kategorie':
+                        config.shortCuts[i].category = command[2];
+                        edited = true;
+                        showInfoToast(`Die Kategorie von ${command[0]} wurde auf ${command[2]} gesetzt!`);
+                        break;
+
+                    case 'farbe': 
+                        showErrorToastSimple('Dieser Command ist noch unter Entwicklung');
+                        config.shortCuts[i].color = command[2];
+                        showInfoToast(`Die Farbe von ${command[0]} wurde auf ${command[2]} gesetzt!`);
+                        break;
+
+                    default:
+                        showErrorToastSimple(`Feld ${command[1]} exestiert nicht! Sie können bearbeiten: [name, url, kategorie, farbe, key]`);
+                        break;
+                }
+            }
+        }
+
+        if (!found) {
+            showErrorToastSimple(`Wir konnten keinen Shortcut mit dem Namen: ${command[0]} finden`);
+        }
+
+        if (edited) {
+            chrome.storage.sync.set({sc: config.shortCuts});
+            document.getElementById('searchText').value = '';
+        }
+    } else {
+        showErrorToastSimple(`Um einen Shortcuts zu bearbeiten schreiben Sie bitte: ":bearbeiten NAME SACHEZUÄNDERN NEUERWERT"`);
+    }
+}

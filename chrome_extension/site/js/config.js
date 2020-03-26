@@ -1,5 +1,7 @@
-import { googleAction, yahooAction, duckduckgoAction, bingAction, standardAction, shortcutAction, backgroundAction, refreshAction } from './commands.js';
+import { googleAction, yahooAction, duckduckgoAction, bingAction, standardAction, shortcutAction, backgroundAction, refreshAction, editAction } from './commands.js';
 import { initBackground } from './getBackground.js';
+import { removeCategories } from './shortcutCategories.js';
+import { hideShortcutInfo } from './searchField.js';
 
 Sentry.init({ 
     dsn: 'https://a3587e3b77964656bdf5942aaf34f1f6@sentry.streimel.com/5',
@@ -28,36 +30,49 @@ export const config = {
     standadSearchProvider: "Google",
     commands: [
         {
-            key: 'g',
-            action: googleAction
+            key: 'hintergrundBild',
+            action: backgroundAction,
+            stopFromSeeing: false
         },
         {
-            key: 'y',
-            action: yahooAction
-        },
-        {
-            key: 'd',
-            action: duckduckgoAction
-        },
-        {
-            key: 'b',
-            action: bingAction
+            key: 'bearbeiten',
+            action: editAction,
+            stopFromSeeing: false
         },
         {
             key: 'standard',
-            action: standardAction
+            action: standardAction,
+            stopFromSeeing: false
         }, 
         {
             key: 'sc',
-            action: shortcutAction
+            action: shortcutAction,
+            stopFromSeeing: false
+        },
+        {
+            key: 'y',
+            action: yahooAction,
+            stopFromSeeing: false
+        },
+        {
+            key: 'b',
+            action: bingAction,
+            stopFromSeeing: false
+        },
+        {
+            key: 'd',
+            action: duckduckgoAction,
+            stopFromSeeing: false
+        },
+        {
+            key: 'g',
+            action: googleAction,
+            stopFromSeeing: false
         },
         {
             key: 'r',
-            action: refreshAction
-        },
-        {
-            key: 'bgp',
-            action: backgroundAction
+            action: refreshAction,
+            stopFromSeeing: false
         }
     ],
     shortCuts: [],
@@ -66,6 +81,11 @@ export const config = {
 
 
 chrome.storage.sync.get(['ssp', 'sc', 'ubp'], (items) => {
+    Sentry.addBreadcrumb({
+        category: 'startup',
+        message: 'Parsing users config',
+        levle: Sentry.Severity.Info 
+    });
     let ssp = items.ssp;
     let sc = items.sc;
     let ubp = items.ubp;
@@ -80,19 +100,25 @@ chrome.storage.sync.get(['ssp', 'sc', 'ubp'], (items) => {
                 key: 'g',
                 url: 'https://www.google.com',
                 name: 'Google',
-                stopFromSeeing: false
+                stopFromSeeing: false,
+                category: null,
+                color: '#FFFFFF'
             },
             {
                 key: 'yt',
                 url: 'https://www.youtube.com',
                 name: 'Youtube',
-                stopFromSeeing: false
+                stopFromSeeing: false,
+                category: null,
+                color: '#FF0000'
             },
             {
                 key: 'r',
                 url: 'https://www.reddit.com',
                 name: 'Reddit',
-                stopFromSeeing: false
+                stopFromSeeing: false,
+                category: null,
+                color: '#ED001C'
             }
         ]
 
@@ -108,7 +134,20 @@ chrome.storage.sync.get(['ssp', 'sc', 'ubp'], (items) => {
     config.standadSearchProvider = ssp;
     config.shortCuts = sc;
     config.useBackgroundPhoto = ubp;
+
+    Sentry.addBreadcrumb({
+        category: 'startup',
+        message: 'Finished parsing users config',
+        data: {
+            standardSearchProvider: ssp,
+            shortCuts: sc,
+            useBackgroundPhoto: ubp
+        },
+        levle: Sentry.Severity.Info 
+    });
     initBackground();
+    removeCategories();
+    hideShortcutInfo();
 });
 
 export function getSearchProviderPrefix(name) {
@@ -118,5 +157,16 @@ export function getSearchProviderPrefix(name) {
             prefix = provider.searchPrefix;
         }
     });
+    if (prefix === null) {
+        Sentry.addBreadcrumb({
+            category: 'search',
+            message: 'Was not able to find a coresponding Searchprovider prefix',
+            level: Sentry.Severity.error,
+            data: {
+                askedProviderName: name,
+                registeredSearchProviders: config.searchproviders
+            }
+        })
+    }
     return prefix;
 }
