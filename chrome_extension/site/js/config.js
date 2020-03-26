@@ -101,21 +101,24 @@ chrome.storage.sync.get(['ssp', 'sc', 'ubp'], (items) => {
                 url: 'https://www.google.com',
                 name: 'Google',
                 stopFromSeeing: false,
-                category: null
+                category: null,
+                color: '#FFFFFF'
             },
             {
                 key: 'yt',
                 url: 'https://www.youtube.com',
                 name: 'Youtube',
                 stopFromSeeing: false,
-                category: 'stuff'
+                category: null,
+                color: '#FF0000'
             },
             {
                 key: 'r',
                 url: 'https://www.reddit.com',
                 name: 'Reddit',
                 stopFromSeeing: false,
-                category: null
+                category: null,
+                color: '#ED001C'
             }
         ]
 

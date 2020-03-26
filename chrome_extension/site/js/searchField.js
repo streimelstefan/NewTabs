@@ -166,23 +166,23 @@ function isShortcut(input) {
 }
 
 function showShortcutInfo(value) {
-    if (config.useBackgroundPhoto) {
+    if (!config.useBackgroundPhoto) {
         config.shortCuts.forEach(sc => {
             if (sc.key === value) {
-                document.querySelector('.arrow-to-dest').style.display = '';
-                document.querySelector('.dest-text').innerHTML = sc.url;
+                document.querySelector('body').style.backgroundColor = sc.color || 'hsl(204, 12%, 25%)';
             }
         })
-    } else {
-
-    }
+    } 
+    config.shortCuts.forEach(sc => {
+        if (sc.key === value) {
+            document.querySelector('.arrow-to-dest').style.display = '';
+            document.querySelector('.dest-text').innerHTML = sc.url;
+        }
+    })
 }
 
 
 export function hideShortcutInfo() {
-    if (config.useBackgroundPhoto) {
-        document.querySelector('.arrow-to-dest').style.display = 'none';
-    } else {
-        document.querySelector('body').style.backgroundColor = '';
-    }
+    document.querySelector('.arrow-to-dest').style.display = 'none';
+    document.querySelector('body').style.backgroundColor = '';
 }

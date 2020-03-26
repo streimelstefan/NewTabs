@@ -60,7 +60,7 @@ export function shortcutAction(query) {
             }
 
             if (validURL(command[2])) {
-                config.shortCuts.push({key: command[1], url: command[2], category: command[3] || null, name: command[4] || command[1]});
+                config.shortCuts.push({key: command[1], url: command[2], category: command[3] || null, color: command[4] || null, name: command[5] || command[1]});
                 chrome.storage.sync.set({sc: config.shortCuts});                    
                 document.getElementById('searchText').value = '';
                 showInfoToast(`Shortcut hinzugefügt!`);
@@ -83,7 +83,7 @@ export function shortcutAction(query) {
                 const topLvlDomain = getTopDomain(domain);
 
                 if (topLvlDomain) {
-                    config.shortCuts.push({key: topLvlDomain, url: command[1], name: topLvlDomain});
+                    config.shortCuts.push({key: topLvlDomain, url: command[1], name: topLvlDomain, category: null, color: null});
                     chrome.storage.sync.set({sc: config.shortCuts});
                     document.getElementById('searchText').value = '';
                     showInfoToast(`Shortcut wurde erstellt! KEY = ${topLvlDomain}`);
@@ -178,8 +178,8 @@ export function editAction(query) {
 
                     case 'farbe': 
                         showErrorToastSimple('Dieser Command ist noch unter Entwicklung');
-                        //config.shortCuts[i].color = command[2];
-                        //showInfoToast(`Die Farbe von ${command[0]} wurde auf ${command[2]} gesetzt!`);
+                        config.shortCuts[i].color = command[2];
+                        showInfoToast(`Die Farbe von ${command[0]} wurde auf ${command[2]} gesetzt!`);
                         break;
 
                     default:
