@@ -23,7 +23,6 @@ document.addEventListener('keydown', (e) => {
         e.preventDefault();
     }
 
-    // deactivate the current Shortcut
     if (e.code === 'Backspace' && e.shiftKey) {
         deactivateAllAutocompletes();
         searchHint.value = '';
@@ -88,13 +87,13 @@ function deactivateAutocomplete(value) {
     config.shortCuts.forEach(sc => {
         if (sc.key === value) {
             sc.stopFromSeeing = true;
-            found = false;
+            found = true;
         }
     });
 
     if (!found) {
         config.commands.forEach(com => {
-            if (com.key === value) {
+            if (com.key === value.replace(':', '')) {
                 com.stopFromSeeing = true;
             }
         })

@@ -1,4 +1,4 @@
-import { googleAction, yahooAction, duckduckgoAction, bingAction, standardAction, shortcutAction, backgroundAction, refreshAction } from './commands.js';
+import { googleAction, yahooAction, duckduckgoAction, bingAction, standardAction, shortcutAction, backgroundAction, refreshAction, editAction } from './commands.js';
 import { initBackground } from './getBackground.js';
 import { removeCategories } from './shortcutCategories.js';
 
@@ -29,33 +29,13 @@ export const config = {
     standadSearchProvider: "Google",
     commands: [
         {
-            key: 'g',
-            action: googleAction,
-            stopFromSeeing: false
-        },
-        {
-            key: 'y',
-            action: yahooAction,
-            stopFromSeeing: false
-        },
-        {
-            key: 'd',
-            action: duckduckgoAction,
-            stopFromSeeing: false
-        },
-        {
-            key: 'b',
-            action: bingAction,
-            stopFromSeeing: false
-        },
-        {
-            key: 'r',
-            action: refreshAction,
-            stopFromSeeing: false
-        },
-        {
-            key: 'bgp',
+            key: 'hintergrundBild',
             action: backgroundAction,
+            stopFromSeeing: false
+        },
+        {
+            key: 'bearbeiten',
+            action: editAction,
             stopFromSeeing: false
         },
         {
@@ -66,6 +46,31 @@ export const config = {
         {
             key: 'sc',
             action: shortcutAction,
+            stopFromSeeing: false
+        },
+        {
+            key: 'y',
+            action: yahooAction,
+            stopFromSeeing: false
+        },
+        {
+            key: 'b',
+            action: bingAction,
+            stopFromSeeing: false
+        },
+        {
+            key: 'd',
+            action: duckduckgoAction,
+            stopFromSeeing: false
+        },
+        {
+            key: 'g',
+            action: googleAction,
+            stopFromSeeing: false
+        },
+        {
+            key: 'r',
+            action: refreshAction,
             stopFromSeeing: false
         }
     ],
