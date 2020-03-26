@@ -1,6 +1,7 @@
 import { googleAction, yahooAction, duckduckgoAction, bingAction, standardAction, shortcutAction, backgroundAction, refreshAction, editAction } from './commands.js';
 import { initBackground } from './getBackground.js';
 import { removeCategories } from './shortcutCategories.js';
+import { hideShortcutInfo } from './searchField.js';
 
 Sentry.init({ 
     dsn: 'https://a3587e3b77964656bdf5942aaf34f1f6@sentry.streimel.com/5',
@@ -143,6 +144,7 @@ chrome.storage.sync.get(['ssp', 'sc', 'ubp'], (items) => {
     });
     initBackground();
     removeCategories();
+    hideShortcutInfo();
 });
 
 export function getSearchProviderPrefix(name) {

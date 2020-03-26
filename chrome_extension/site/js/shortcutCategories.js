@@ -6,15 +6,12 @@ export function displayCategories() {
     let generatedCategories = [];
     config.shortCuts.forEach(shortCut => {
         let sc = shortCut;
-        console.log(sc.category);
         if (!sc.category) {
             sc.category = 'Standard';
         }
 
-        console.log(sc.category);
 
         if (!generatedCategories.includes(sc.category)) {
-            console.log('test');
             generateCategorie(sc.category);
             generatedCategories.push(sc.category);
         }

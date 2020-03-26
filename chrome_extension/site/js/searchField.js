@@ -37,11 +37,17 @@ document.addEventListener('keydown', (e) => {
         return;
     }
 
-
+    
+    
     setTimeout(() => {
         showShortcut(input);
+        if (isShortcut(input.value)) {
+            showShortcutInfo(input.value);
+        } else {
+            hideShortcutInfo();
+        }
     }, 50);
-
+    
     if (e.key === 'Control' || e.key === 'Alt' || e.key === 'Shift') {
         return;
     }
@@ -145,5 +151,38 @@ function showShortcut(input) {
 
     } else {
         searchHint.value = '';
+    }
+}
+
+function isShortcut(input) {
+    let isSc = false;
+    config.shortCuts.forEach(sc => {
+        if (sc.key === input) {
+            isSc = true;
+        }
+    });
+
+    return isSc;
+}
+
+function showShortcutInfo(value) {
+    if (config.useBackgroundPhoto) {
+        config.shortCuts.forEach(sc => {
+            if (sc.key === value) {
+                document.querySelector('.arrow-to-dest').style.display = '';
+                document.querySelector('.dest-text').innerHTML = sc.url;
+            }
+        })
+    } else {
+
+    }
+}
+
+
+export function hideShortcutInfo() {
+    if (config.useBackgroundPhoto) {
+        document.querySelector('.arrow-to-dest').style.display = 'none';
+    } else {
+        document.querySelector('body').style.backgroundColor = '';
     }
 }
