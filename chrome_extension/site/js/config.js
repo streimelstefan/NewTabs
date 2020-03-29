@@ -1,4 +1,4 @@
-import { googleAction, yahooAction, duckduckgoAction, bingAction, standardAction, shortcutAction, backgroundAction, refreshAction, editAction } from './commands.js';
+import { googleAction, yahooAction, duckduckgoAction, bingAction, standardAction, shortcutAction, backgroundAction, refreshAction, editAction, categoryAction } from './commands.js';
 import { initBackground } from './getBackground.js';
 import { removeCategories } from './shortcutCategories.js';
 import { hideShortcutInfo } from './searchField.js';
@@ -43,6 +43,11 @@ export const config = {
             key: 'standard',
             action: standardAction,
             stopFromSeeing: false
+        },
+        {
+            key: 'kat',
+            action: categoryAction,
+            stopFromSeeing: false
         }, 
         {
             key: 'sc',
@@ -76,19 +81,21 @@ export const config = {
         }
     ],
     shortCuts: [],
+    categories: [],
     useBackgroundPhoto: true
 }
 
 
-chrome.storage.sync.get(['ssp', 'sc', 'ubp'], (items) => {
+chrome.storage.sync.get(['ssp', 'sc', 'ubp', 'cat'], (items) => {
     Sentry.addBreadcrumb({
         category: 'startup',
         message: 'Parsing users config',
-        levle: Sentry.Severity.Info 
+        level: Sentry.Severity.Info 
     });
     let ssp = items.ssp;
     let sc = items.sc;
     let ubp = items.ubp;
+    let cat = items.cat;
     if (!ssp) {
         ssp = 'Google';
         chrome.storage.sync.set({ssp: ssp});
@@ -131,9 +138,15 @@ chrome.storage.sync.get(['ssp', 'sc', 'ubp'], (items) => {
         chrome.storage.sync.set({ubp: ubp});
     }
 
+    if (!cat) {
+        cat = [],
+        chrome.storage.sync.set({cat: cat});
+    }
+
     config.standadSearchProvider = ssp;
     config.shortCuts = sc;
     config.useBackgroundPhoto = ubp;
+    config.categories = cat;
 
     Sentry.addBreadcrumb({
         category: 'startup',
@@ -141,10 +154,13 @@ chrome.storage.sync.get(['ssp', 'sc', 'ubp'], (items) => {
         data: {
             standardSearchProvider: ssp,
             shortCuts: sc,
-            useBackgroundPhoto: ubp
+            useBackgroundPhoto: ubp,
+            categories: cat
         },
         levle: Sentry.Severity.Info 
     });
+
+    console.log(config);
     initBackground();
     removeCategories();
     hideShortcutInfo();

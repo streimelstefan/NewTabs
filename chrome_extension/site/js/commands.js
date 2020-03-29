@@ -60,7 +60,21 @@ export function shortcutAction(query) {
             }
 
             if (validURL(command[2])) {
+                if (command[3]) {
+                    if (!config.categories.includes(command[3])) {
+                        showErrorToastSimple(`Konnte die Kategorie ${command[3]} nicht finden!`);
+                        return;
+                    }
+                }
+                for (let i = 0; i < config.shortCuts.length; i++) {
+                    if (config.shortCuts[i].key === command[1]) {
+                        showErrorToastSimple(`Ein Shortcut mit dem key ${command[1]} existiert bereits`);
+                        return;
+                    }
+                }
+
                 config.shortCuts.push({key: command[1], url: command[2], category: command[3] || null, color: command[4] || null, name: command[5] || command[1]});
+                sortShortcutArray();
                 chrome.storage.sync.set({sc: config.shortCuts});                    
                 document.getElementById('searchText').value = '';
                 showInfoToast(`Shortcut hinzugefügt!`);
@@ -83,7 +97,14 @@ export function shortcutAction(query) {
                 const topLvlDomain = getTopDomain(domain);
 
                 if (topLvlDomain) {
+                    for (let i = 0; i < config.shortCuts.length; i++) {
+                        if (config.shortCuts[i].key === command[1]) {
+                            showErrorToastSimple(`Ein Shortcut mit dem key ${command[1]} existiert bereits`);
+                            return;
+                        }
+                    }
                     config.shortCuts.push({key: topLvlDomain, url: command[1], name: topLvlDomain, category: null, color: null});
+                    sortShortcutArray();
                     chrome.storage.sync.set({sc: config.shortCuts});
                     document.getElementById('searchText').value = '';
                     showInfoToast(`Shortcut wurde erstellt! KEY = ${topLvlDomain}`);
@@ -104,7 +125,7 @@ export function shortcutAction(query) {
                     }
 
                     return result;
-                })
+                });
             chrome.storage.sync.set({sc: config.shortCuts});
             document.getElementById('searchText').value = '';
         }
@@ -152,6 +173,7 @@ export function editAction(query) {
                     case 'key':    
                         config.shortCuts[i].key = command[2];
                         edited = true;
+                        sortShortcutArray();
                         showInfoToast(`Der Key von ${command[0]} wurde auf ${command[2]} gesetzt!`);
                         break;
                     case 'url':
@@ -171,9 +193,13 @@ export function editAction(query) {
                         break;
 
                     case 'kategorie':
-                        config.shortCuts[i].category = command[2];
-                        edited = true;
-                        showInfoToast(`Die Kategorie von ${command[0]} wurde auf ${command[2]} gesetzt!`);
+                        if (config.categories.includes(command[2])) {
+                            config.shortCuts[i].category = command[2];
+                            edited = true;
+                            showInfoToast(`Die Kategorie von ${command[0]} wurde auf ${command[2]} gesetzt!`);
+                        } else {
+                            showErrorToastSimple(`Die Kategorie ${command[2]} konnte nicht gefunden werden.`);
+                        }
                         break;
 
                     case 'farbe': 
@@ -200,4 +226,101 @@ export function editAction(query) {
     } else {
         showErrorToastSimple(`Um einen Shortcuts zu bearbeiten schreiben Sie bitte: ":bearbeiten NAME SACHEZUÄNDERN NEUERWERT"`);
     }
+}
+
+export function categoryAction(query) {
+    const command = query.split(' ');
+
+    if (command[0] === 'add') {
+        if (command.length === 2) {
+            addCategory(command[1]);
+        } else {
+            showErrorToastSimple('Der Command um eine Kategorie hinzuzufügen nimmt nur 1 Argumet: ":kat add NAME"');
+        }
+    } else if (command[0] === 'remove') {
+        if (command.length === 2) {
+            removeCategory(command[1]);
+        } else {
+            showErrorToastSimple('Der Command um eine Kategorie zu entfernen nimmt nur 1 Argumet: ":kat remove NAME"');
+        }
+    } else if (command[0] === 'edit') {
+        if (command.length === 4) {
+            editCategory(command[1], command[2], command[3]);
+        } else {
+            showErrorToastSimple('Der Command um eine Kategorie zu bearbeiten nimmt genau 3 Argumete: ":kat edit NAME ZUBEARBEITEN NEUERWERT"');
+        }
+    } else {
+        showErrorToastSimple(`Um Kategorie zu erstellen/bearbeiten/löschen schrieben Sie bitte: ":kat add/edit/remove NAME`);
+    }
+
+}
+
+function addCategory(name) {
+    config.categories.push(name);
+    chrome.storage.sync.set({cat: config.categories});
+    document.getElementById('searchText').value = '';
+    console.log(config);
+    showInfoToast(`Kategorie ${name} wurde hinzugefügt`);
+}
+
+function removeCategory(name) {
+
+    config.categories = config.categories.filter(category => {
+        const result = !(category === name);
+
+        if (!result) {
+            for (let i = 0; i < config.shortCuts.length; i++) {
+                if (config.shortCuts[i].category === name) {
+                    config.shortCuts[i].category = null;
+                    console.log(config.shortCuts[i]);
+                }
+            }
+            
+            showInfoToast(`Kategorie ${name} wurde entfernt`);
+        }
+
+        return result;
+    })
+
+    console.log(config);
+
+    chrome.storage.sync.set({cat: config.categories});
+    document.getElementById('searchText').value = '';
+}
+
+function editCategory(name, field, newValue) {
+    let found = false;
+    let edited = false;
+    console.log(config.categories.length);
+    console.log(config);
+    for (let i = 0; i < config.categories.length; i++) {
+        console.log(config.categories[i]);
+        console.log(name);
+        if (config.categories[i] === name) {
+            found = true;
+            
+            if (field === 'name') {
+                edited = true;
+                showInfoToast(`Name von Kategorie ${config.categories[i]} wurde auf ${newValue} gesetzt.`);
+                config.categories[i] = newValue;
+            } else {
+                showErrorToastSimple(`${field} kann bei Kategorien nicht bearbeited werden! Werte die bearbeited werden können: 'name'`);
+            }
+            
+        }
+    }    
+        
+    if (edited) {
+        chrome.storage.sync.set({cat: config.categories});
+    }
+
+    if (!found) {
+        showErrorToastSimple(`Wir konnte Kategorie ${name} nicht finden!`);
+    }
+}
+
+function sortShortcutArray() {
+    config.shortCuts.sort((a, b) => {
+        return b.key.length - a.key.length;
+    });
 }
