@@ -256,11 +256,15 @@ export function categoryAction(query) {
 }
 
 function addCategory(name) {
-    config.categories.push(name);
-    chrome.storage.sync.set({cat: config.categories});
-    document.getElementById('searchText').value = '';
-    console.log(config);
-    showInfoToast(`Kategorie ${name} wurde hinzugefügt`);
+    if (!config.categories.includes(name)) {
+        config.categories.push(name);
+        chrome.storage.sync.set({cat: config.categories});
+        document.getElementById('searchText').value = '';
+        console.log(config);
+        showInfoToast(`Kategorie ${name} wurde hinzugefügt`);
+    } else {
+        showErrorToastSimple(`Es existiert bereits eine Kategorie mit dem Namen ${name}`);
+    }
 }
 
 function removeCategory(name) {
@@ -294,13 +298,18 @@ function editCategory(name, field, newValue) {
     console.log(config.categories.length);
     console.log(config);
     for (let i = 0; i < config.categories.length; i++) {
-        console.log(config.categories[i]);
-        console.log(name);
         if (config.categories[i] === name) {
             found = true;
             
             if (field === 'name') {
                 edited = true;
+                
+                for (let i = 0; i < config.shortCuts.length; i++) {
+                    if (config.shortCuts[i].category === name) {
+                        console.log(config);
+                    }
+                }
+
                 showInfoToast(`Name von Kategorie ${config.categories[i]} wurde auf ${newValue} gesetzt.`);
                 config.categories[i] = newValue;
             } else {
@@ -312,6 +321,7 @@ function editCategory(name, field, newValue) {
         
     if (edited) {
         chrome.storage.sync.set({cat: config.categories});
+        document.getElementById('searchText').value = '';
     }
 
     if (!found) {
