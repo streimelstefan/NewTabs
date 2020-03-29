@@ -66,6 +66,13 @@ export function shortcutAction(query) {
                         return;
                     }
                 }
+                for (let i = 0; i < config.shortCuts.length; i++) {
+                    if (config.shortCuts[i].key === command[1]) {
+                        showErrorToastSimple(`Ein Shortcut mit dem key ${command[1]} existiert bereits`);
+                        return;
+                    }
+                }
+
                 config.shortCuts.push({key: command[1], url: command[2], category: command[3] || null, color: command[4] || null, name: command[5] || command[1]});
                 sortShortcutArray();
                 chrome.storage.sync.set({sc: config.shortCuts});                    
@@ -90,6 +97,12 @@ export function shortcutAction(query) {
                 const topLvlDomain = getTopDomain(domain);
 
                 if (topLvlDomain) {
+                    for (let i = 0; i < config.shortCuts.length; i++) {
+                        if (config.shortCuts[i].key === command[1]) {
+                            showErrorToastSimple(`Ein Shortcut mit dem key ${command[1]} existiert bereits`);
+                            return;
+                        }
+                    }
                     config.shortCuts.push({key: topLvlDomain, url: command[1], name: topLvlDomain, category: null, color: null});
                     sortShortcutArray();
                     chrome.storage.sync.set({sc: config.shortCuts});
