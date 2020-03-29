@@ -159,6 +159,8 @@ chrome.storage.sync.get(['ssp', 'sc', 'ubp', 'cat'], (items) => {
         },
         levle: Sentry.Severity.Info 
     });
+
+    console.log(config);
     initBackground();
     removeCategories();
     hideShortcutInfo();

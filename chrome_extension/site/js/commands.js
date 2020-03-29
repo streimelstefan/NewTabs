@@ -60,6 +60,12 @@ export function shortcutAction(query) {
             }
 
             if (validURL(command[2])) {
+                if (command[3]) {
+                    if (!config.categories.includes(command[3])) {
+                        showErrorToastSimple(`Konnte die Kategorie ${command[3]} nicht finden!`);
+                        return;
+                    }
+                }
                 config.shortCuts.push({key: command[1], url: command[2], category: command[3] || null, color: command[4] || null, name: command[5] || command[1]});
                 chrome.storage.sync.set({sc: config.shortCuts});                    
                 document.getElementById('searchText').value = '';
@@ -171,9 +177,13 @@ export function editAction(query) {
                         break;
 
                     case 'kategorie':
-                        config.shortCuts[i].category = command[2];
-                        edited = true;
-                        showInfoToast(`Die Kategorie von ${command[0]} wurde auf ${command[2]} gesetzt!`);
+                        if (config.categories.includes(command[2])) {
+                            config.shortCuts[i].category = command[2];
+                            edited = true;
+                            showInfoToast(`Die Kategorie von ${command[0]} wurde auf ${command[2]} gesetzt!`);
+                        } else {
+                            showErrorToastSimple(`Die Kategorie ${command[2]} konnte nicht gefunden werden.`);
+                        }
                         break;
 
                     case 'farbe': 
@@ -238,15 +248,24 @@ function addCategory(name) {
 
 function removeCategory(name) {
 
-    config.shortCuts = config.categories.filter(category => {
+    config.categories = config.categories.filter(category => {
         const result = !(category === name);
 
         if (!result) {
+            for (let i = 0; i < config.shortCuts.length; i++) {
+                if (config.shortCuts[i].category === name) {
+                    config.shortCuts[i].category = null;
+                    console.log(config.shortCuts[i]);
+                }
+            }
+            
             showInfoToast(`Kategorie ${name} wurde entfernt`);
         }
 
         return result;
     })
+
+    console.log(config);
 
     chrome.storage.sync.set({cat: config.categories});
     document.getElementById('searchText').value = '';
