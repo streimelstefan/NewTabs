@@ -67,6 +67,7 @@ export function shortcutAction(query) {
                     }
                 }
                 config.shortCuts.push({key: command[1], url: command[2], category: command[3] || null, color: command[4] || null, name: command[5] || command[1]});
+                sortShortcutArray();
                 chrome.storage.sync.set({sc: config.shortCuts});                    
                 document.getElementById('searchText').value = '';
                 showInfoToast(`Shortcut hinzugefügt!`);
@@ -90,6 +91,7 @@ export function shortcutAction(query) {
 
                 if (topLvlDomain) {
                     config.shortCuts.push({key: topLvlDomain, url: command[1], name: topLvlDomain, category: null, color: null});
+                    sortShortcutArray();
                     chrome.storage.sync.set({sc: config.shortCuts});
                     document.getElementById('searchText').value = '';
                     showInfoToast(`Shortcut wurde erstellt! KEY = ${topLvlDomain}`);
@@ -158,6 +160,7 @@ export function editAction(query) {
                     case 'key':    
                         config.shortCuts[i].key = command[2];
                         edited = true;
+                        sortShortcutArray();
                         showInfoToast(`Der Key von ${command[0]} wurde auf ${command[2]} gesetzt!`);
                         break;
                     case 'url':
@@ -243,6 +246,7 @@ function addCategory(name) {
     config.categories.push(name);
     chrome.storage.sync.set({cat: config.categories});
     document.getElementById('searchText').value = '';
+    console.log(config);
     showInfoToast(`Kategorie ${name} wurde hinzugefügt`);
 }
 
@@ -300,4 +304,10 @@ function editCategory(name, field, newValue) {
     if (!found) {
         showErrorToastSimple(`Wir konnte Kategorie ${name} nicht finden!`);
     }
+}
+
+function sortShortcutArray() {
+    config.shortCuts.sort((a, b) => {
+        return b.key.length - a.key.length;
+    });
 }
