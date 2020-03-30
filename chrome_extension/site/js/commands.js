@@ -271,6 +271,27 @@ export function exportAction(query) {
     downloadAnchorNode.remove();
 }
 
+export function importAction(query) {
+    var input = document.createElement('input');
+    input.type = 'file';
+
+    input.onchange = e => { 
+
+        var file = e.target.files[0]; 
+
+        var reader = new FileReader();
+        reader.readAsText(file,'UTF-8');
+
+        reader.onload = readerEvent => {
+            var content = readerEvent.target.result;
+            parseConfig(content);
+        }
+
+    }
+
+    input.click();
+}
+
 function addCategory(name) {
     if (!config.categories.includes(name)) {
         config.categories.push(name);
@@ -349,4 +370,21 @@ function sortShortcutArray() {
     config.shortCuts.sort((a, b) => {
         return b.key.length - a.key.length;
     });
+}
+
+function parseConfig(content) {
+    try {
+        const parsedContent = JSON.parse(content);
+        if (parsedContent.sc && parsedContent.cat && parsedContent.ssp && parsedContent.ubp) {
+            config.shortCuts = parsedContent.sc;
+            config.categories = parsedContent.cat;
+            config.standadSearchProvider = parsedContent.ssp;
+            config.useBackgroundPhoto = parsedContent.ubp;
+            showInfoToast('Ihre Config wurde importiert!');
+        } else {
+           throw 'error'; 
+        }
+    } catch (e) {
+        showErrorToastSimple('Die von Ihnen angegebene Config ist nicht richtig!');
+    }
 }

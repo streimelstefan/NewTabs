@@ -1,4 +1,4 @@
-import { googleAction, exportAction, yahooAction, duckduckgoAction, bingAction, standardAction, shortcutAction, backgroundAction, refreshAction, editAction, categoryAction } from './commands.js';
+import { googleAction, importAction, exportAction, yahooAction, duckduckgoAction, bingAction, standardAction, shortcutAction, backgroundAction, refreshAction, editAction, categoryAction } from './commands.js';
 import { initBackground } from './getBackground.js';
 import { removeCategories } from './shortcutCategories.js';
 import { hideShortcutInfo } from './searchField.js';
@@ -47,6 +47,11 @@ export const config = {
         {
             key: 'export',
             action: exportAction,
+            stopFromSeeing: false
+        },
+        {
+            key: 'import',
+            action: importAction,
             stopFromSeeing: false
         },
         {
