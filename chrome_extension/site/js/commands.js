@@ -255,6 +255,22 @@ export function categoryAction(query) {
 
 }
 
+export function exportAction(query) {
+    let dataConf = {
+        sc: config.shortCuts,
+        cat: config.categories,
+        ssp: config.standadSearchProvider,
+        ubp: config.useBackgroundPhoto
+    };
+
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataConf));
+    let downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href",     dataStr);
+    downloadAnchorNode.setAttribute("download", "newTabs-config.json");
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
 function addCategory(name) {
     if (!config.categories.includes(name)) {
         config.categories.push(name);
