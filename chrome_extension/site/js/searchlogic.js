@@ -47,8 +47,9 @@ document.getElementById('searchForm').addEventListener('submit', (event) => {
     } else {
         // if there is a coresponding Shortcut move there.
         if (!executeShortCut(input.value)) {
-            const query = getSearchProviderPrefix(config.standadSearchProvider) + input.value;
+            const query = getSearchProviderPrefix(config.standadSearchProvider) + encodeURIComponent(input.value);
             
+            console.log(query);
             window.location.href = query;
         }
 
