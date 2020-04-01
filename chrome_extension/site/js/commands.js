@@ -380,6 +380,7 @@ function parseConfig(content) {
             config.categories = parsedContent.cat;
             config.standadSearchProvider = parsedContent.ssp;
             config.useBackgroundPhoto = parsedContent.ubp;
+            chrome.storage.sync.set({cat: config.categories, sc: config.shortCuts, ssp: config.standadSearchProvider, ubp: config.useBackgroundPhoto});
             showInfoToast('Ihre Config wurde importiert!');
         } else {
            throw 'error'; 
