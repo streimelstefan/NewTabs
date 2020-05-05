@@ -36,14 +36,14 @@ export function standardAction(query) {
         if (provider.name.toUpperCase() === query.toUpperCase()) {
             config.standadSearchProvider = provider.name;
             document.getElementById('searchText').value = '';
-            showInfoToast(`${provider.name} ist nun Ihre Standardsuchmaschiene!`);
+            showInfoToast(`${provider.name} is now your standard search provider!`);
             found = true;
             return;
         }
     });
 
     if (!found) {
-        showErrorToastSimple(`Es konnte keine Suchmaschiene mit dem Namen ${query} gefunden werden!`);
+        showErrorToastSimple(`I was not abel to find a search provider of the name ${query}!`);
     }
 
     chrome.storage.sync.set({ssp: config.standadSearchProvider});
@@ -62,13 +62,13 @@ export function shortcutAction(query) {
             if (validURL(command[2])) {
                 if (command[3]) {
                     if (!config.categories.includes(command[3])) {
-                        showErrorToastSimple(`Konnte die Kategorie ${command[3]} nicht finden!`);
+                        showErrorToastSimple(`I could not find the category ${command[3]}`);
                         return;
                     }
                 }
                 for (let i = 0; i < config.shortCuts.length; i++) {
                     if (config.shortCuts[i].key === command[1]) {
-                        showErrorToastSimple(`Ein Shortcut mit dem key ${command[1]} existiert bereits`);
+                        showErrorToastSimple(`A shortcut with the key ${command[1]} does already exist!`);
                         return;
                     }
                 }
@@ -77,9 +77,9 @@ export function shortcutAction(query) {
                 sortShortcutArray();
                 chrome.storage.sync.set({sc: config.shortCuts});                    
                 document.getElementById('searchText').value = '';
-                showInfoToast(`Shortcut hinzugefügt!`);
+                showInfoToast(`Added shortcut!`);
             } else {
-                showErrorToastSimple('Die URL die Sie angegeben haben ist nicht correct!');
+                showErrorToastSimple('The provided URL is not valid');
             }
 
         }
@@ -99,7 +99,7 @@ export function shortcutAction(query) {
                 if (topLvlDomain) {
                     for (let i = 0; i < config.shortCuts.length; i++) {
                         if (config.shortCuts[i].key === command[1]) {
-                            showErrorToastSimple(`Ein Shortcut mit dem key ${command[1]} existiert bereits`);
+                            showErrorToastSimple(`A Shortcut with the key ${command[1]} does already exist`);
                             return;
                         }
                     }
@@ -107,12 +107,12 @@ export function shortcutAction(query) {
                     sortShortcutArray();
                     chrome.storage.sync.set({sc: config.shortCuts});
                     document.getElementById('searchText').value = '';
-                    showInfoToast(`Shortcut wurde erstellt! KEY = ${topLvlDomain}`);
+                    showInfoToast(`Your shortcut was created! Key = ${topLvlDomain}`);
                 } else {
-                    showErrorToastSimple('Konnte KEY nicht aus URL erstellen bitte geben Sie den KEY seperat an!');
+                    showErrorToastSimple('I could not create a key from the URL please provide one separately!');
                 }
             } else {
-                showErrorToastSimple('Die von Ihnen angegebene URL ist nicht richtig!');
+                showErrorToastSimple('Your provided URL is invalid');
             }
         } else if (command[0] === 'remove') {
             config.shortCuts = config.shortCuts.filter(shortcut => {
@@ -121,7 +121,7 @@ export function shortcutAction(query) {
                                     shortcut.url == command[1]);
 
                     if (!result) {
-                        showInfoToast(`Shortcut ${shortcut.name} wurde entfernt`);
+                        showInfoToast(`Deleted shortcut ${shortcut.name}`);
                     }
 
                     return result;
@@ -131,7 +131,7 @@ export function shortcutAction(query) {
         }
 
     } else {
-        showErrorToastSimple('Um einen Shortcut hinzu zufügen müssens Sie den Command so Schreiben: :sc add KEY URL');
+        showErrorToastSimple('To add a shortcut please write: :sc add KEY URL');
     }
 }
 
@@ -141,22 +141,22 @@ export function backgroundAction(query) {
         chrome.storage.sync.set({ubp: true});
         refreshBackground();
         document.getElementById('searchText').value = '';
-        showInfoToast('Hintergrund Photos wurden eingeschalten');
+        showInfoToast('Background photos are now on');
     } else if (query.trim() === 'off') {
         config.useBackgroundPhoto = false;
         chrome.storage.sync.set({ubp: false});
         document.querySelector('body').style.backgroundImage = '';
         document.getElementById('searchText').value = '';
-        showInfoToast('Hintergrund Photos wurden ausgeschalten!');
+        showInfoToast('Background photos are now off');
     } else {
-        showErrorToastSimple(`Unbekannter Befehl: ${query}! Bitte geben Sie entweder "on/off" ein`);
+        showErrorToastSimple(`Unknown command: ${query}! Please enter "on/off"`);
     }
 }
 
 export function refreshAction(query) {
     refreshBackground();
     document.getElementById('searchText').value = '';
-    showInfoToast('Es wird einen neues Bild heruntergeladen bitte etwas gedult!');
+    showInfoToast('Getting a new Image please wait.');
 } 
 
 export function editAction(query) {
@@ -174,7 +174,7 @@ export function editAction(query) {
                         config.shortCuts[i].key = command[2];
                         edited = true;
                         sortShortcutArray();
-                        showInfoToast(`Der Key von ${command[0]} wurde auf ${command[2]} gesetzt!`);
+                        showInfoToast(`The Key of ${command[0]} was set to ${command[2]}!`);
                         break;
                     case 'url':
                         if (!command[2].startsWith('http://') && !command[2].startsWith('https://')) {
@@ -183,40 +183,39 @@ export function editAction(query) {
 
                         config.shortCuts[i].url = command[2];
                         edited = true;
-                        showInfoToast(`Die URL von ${command[0]} wurde auf ${command[2]} gesetzt!`);
+                        showInfoToast(`The URL of ${command[0]} was set to ${command[2]}!`);
                         break;
 
                     case 'name':
                         config.shortCuts[i].name = command[2];
                         edited = true;
-                        showInfoToast(`Der Name von ${command[0]} wurde auf ${command[2]} gesetzt!`);
+                        showInfoToast(`The Name of ${command[0]} was set to ${command[2]}!`);
                         break;
 
-                    case 'kategorie':
+                    case 'category':
                         if (config.categories.includes(command[2])) {
                             config.shortCuts[i].category = command[2];
                             edited = true;
-                            showInfoToast(`Die Kategorie von ${command[0]} wurde auf ${command[2]} gesetzt!`);
+                            showInfoToast(`The Category of ${command[0]} was set to ${command[2]}!`);
                         } else {
                             showErrorToastSimple(`Die Kategorie ${command[2]} konnte nicht gefunden werden.`);
                         }
                         break;
 
-                    case 'farbe': 
-                        showErrorToastSimple('Dieser Command ist noch unter Entwicklung');
+                    case 'color': 
+                        showErrorToastSimple('This command is currently under development');
                         config.shortCuts[i].color = command[2];
-                        showInfoToast(`Die Farbe von ${command[0]} wurde auf ${command[2]} gesetzt!`);
                         break;
 
                     default:
-                        showErrorToastSimple(`Feld ${command[1]} exestiert nicht! Sie können bearbeiten: [name, url, kategorie, farbe, key]`);
+                        showErrorToastSimple(`Field ${command[1]} does not exist! You can edit: [name, url, category, key]`);
                         break;
                 }
             }
         }
 
         if (!found) {
-            showErrorToastSimple(`Wir konnten keinen Shortcut mit dem Namen: ${command[0]} finden`);
+            showErrorToastSimple(`Could not find shortcut with the name: ${command[0]}`);
         }
 
         if (edited) {
@@ -224,7 +223,7 @@ export function editAction(query) {
             document.getElementById('searchText').value = '';
         }
     } else {
-        showErrorToastSimple(`Um einen Shortcuts zu bearbeiten schreiben Sie bitte: ":bearbeiten NAME SACHEZUÄNDERN NEUERWERT"`);
+        showErrorToastSimple(`To edit a shortcut please write: ":edit NAME FIELDTOEDIT NEWVALUE"`);
     }
 }
 
@@ -235,22 +234,22 @@ export function categoryAction(query) {
         if (command.length === 2) {
             addCategory(command[1]);
         } else {
-            showErrorToastSimple('Der Command um eine Kategorie hinzuzufügen nimmt nur 1 Argumet: ":kat add NAME"');
+            showErrorToastSimple('To add a category write: ":kat add NAME"');
         }
     } else if (command[0] === 'remove') {
         if (command.length === 2) {
             removeCategory(command[1]);
         } else {
-            showErrorToastSimple('Der Command um eine Kategorie zu entfernen nimmt nur 1 Argumet: ":kat remove NAME"');
+            showErrorToastSimple('To Remove a category write: ":kat remove NAME"');
         }
     } else if (command[0] === 'edit') {
         if (command.length === 4) {
             editCategory(command[1], command[2], command[3]);
         } else {
-            showErrorToastSimple('Der Command um eine Kategorie zu bearbeiten nimmt genau 3 Argumete: ":kat edit NAME ZUBEARBEITEN NEUERWERT"');
+            showErrorToastSimple('To edit a category write: ":kat edit NAME FIELDTOEDIT NEWVALUE"');
         }
     } else {
-        showErrorToastSimple(`Um Kategorie zu erstellen/bearbeiten/löschen schrieben Sie bitte: ":kat add/edit/remove NAME`);
+        showErrorToastSimple(`To add/edit/remove a category write: ":kat add/edit/remove NAME`);
     }
 
 }
@@ -298,9 +297,9 @@ function addCategory(name) {
         chrome.storage.sync.set({cat: config.categories});
         document.getElementById('searchText').value = '';
         console.log(config);
-        showInfoToast(`Kategorie ${name} wurde hinzugefügt`);
+        showInfoToast(`Category ${name} was added`);
     } else {
-        showErrorToastSimple(`Es existiert bereits eine Kategorie mit dem Namen ${name}`);
+        showErrorToastSimple(`A category with the name ${name} does already exist`);
     }
 }
 
@@ -317,7 +316,7 @@ function removeCategory(name) {
                 }
             }
             
-            showInfoToast(`Kategorie ${name} wurde entfernt`);
+            showInfoToast(`Category ${name} was deleted`);
         }
 
         return result;
@@ -347,10 +346,10 @@ function editCategory(name, field, newValue) {
                     }
                 }
 
-                showInfoToast(`Name von Kategorie ${config.categories[i]} wurde auf ${newValue} gesetzt.`);
+                showInfoToast(`Name of ${config.categories[i]} was set to ${newValue}.`);
                 config.categories[i] = newValue;
             } else {
-                showErrorToastSimple(`${field} kann bei Kategorien nicht bearbeited werden! Werte die bearbeited werden können: 'name'`);
+                showErrorToastSimple(`${field} kann not be edited. Fields that can be edited: 'name'`);
             }
             
         }
@@ -362,7 +361,7 @@ function editCategory(name, field, newValue) {
     }
 
     if (!found) {
-        showErrorToastSimple(`Wir konnte Kategorie ${name} nicht finden!`);
+        showErrorToastSimple(`Could not find category ${name}!`);
     }
 }
 
@@ -381,11 +380,11 @@ function parseConfig(content) {
             config.standadSearchProvider = parsedContent.ssp;
             config.useBackgroundPhoto = parsedContent.ubp;
             chrome.storage.sync.set({cat: config.categories, sc: config.shortCuts, ssp: config.standadSearchProvider, ubp: config.useBackgroundPhoto});
-            showInfoToast('Ihre Config wurde importiert!');
+            showInfoToast('Config imported!');
         } else {
            throw 'error'; 
         }
     } catch (e) {
-        showErrorToastSimple('Die von Ihnen angegebene Config ist nicht richtig!');
+        showErrorToastSimple('Your Config is not valid!');
     }
 }

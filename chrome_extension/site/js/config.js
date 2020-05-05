@@ -30,12 +30,12 @@ export const config = {
     standadSearchProvider: "Google",
     commands: [
         {
-            key: 'hintergrundBild',
+            key: 'backgroundPhoto',
             action: backgroundAction,
             stopFromSeeing: false
         },
         {
-            key: 'bearbeiten',
+            key: 'edit',
             action: editAction,
             stopFromSeeing: false
         },
@@ -55,10 +55,10 @@ export const config = {
             stopFromSeeing: false
         },
         {
-            key: 'kat',
+            key: 'cat',
             action: categoryAction,
             stopFromSeeing: false
-        }, 
+        },
         {
             key: 'sc',
             action: shortcutAction,
