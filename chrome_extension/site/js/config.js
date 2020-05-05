@@ -3,11 +3,6 @@ import { initBackground } from './getBackground.js';
 import { removeCategories } from './shortcutCategories.js';
 import { hideShortcutInfo } from './searchField.js';
 
-Sentry.init({ 
-    dsn: 'https://a3587e3b77964656bdf5942aaf34f1f6@sentry.streimel.com/5',
-    release: 'newtabs@${CI_COMMIT_TAG}' // In the ci process this will be set to the App version
-});
-
 export const config = {
     searchproviders: [
         {
@@ -97,11 +92,6 @@ export const config = {
 
 
 chrome.storage.sync.get(['ssp', 'sc', 'ubp', 'cat'], (items) => {
-    Sentry.addBreadcrumb({
-        category: 'startup',
-        message: 'Parsing users config',
-        level: Sentry.Severity.Info 
-    });
     let ssp = items.ssp;
     let sc = items.sc;
     let ubp = items.ubp;
@@ -158,18 +148,6 @@ chrome.storage.sync.get(['ssp', 'sc', 'ubp', 'cat'], (items) => {
     config.useBackgroundPhoto = ubp;
     config.categories = cat;
 
-    Sentry.addBreadcrumb({
-        category: 'startup',
-        message: 'Finished parsing users config',
-        data: {
-            standardSearchProvider: ssp,
-            shortCuts: sc,
-            useBackgroundPhoto: ubp,
-            categories: cat
-        },
-        levle: Sentry.Severity.Info 
-    });
-
     console.log(config);
     initBackground();
     removeCategories();
@@ -184,15 +162,6 @@ export function getSearchProviderPrefix(name) {
         }
     });
     if (prefix === null) {
-        Sentry.addBreadcrumb({
-            category: 'search',
-            message: 'Was not able to find a coresponding Searchprovider prefix',
-            level: Sentry.Severity.error,
-            data: {
-                askedProviderName: name,
-                registeredSearchProviders: config.searchproviders
-            }
-        })
     }
     return prefix;
 }

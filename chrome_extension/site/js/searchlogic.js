@@ -7,15 +7,6 @@ const input = document.getElementById('searchText');
 document.getElementById('searchForm').addEventListener('submit', (event) => {
     event.preventDefault();
 
-    Sentry.addBreadcrumb({
-        category: 'search',
-        message: 'User just submitted something',
-        data: {
-            query: input.value
-        },
-        levle: Sentry.Severity.Info 
-    });
-
     if (validURL('https://' + input.value)) {
         window.location.href = 'https://' + input.value;
         return;
@@ -48,7 +39,7 @@ document.getElementById('searchForm').addEventListener('submit', (event) => {
         // if there is a coresponding Shortcut move there.
         if (!executeShortCut(input.value)) {
             const query = getSearchProviderPrefix(config.standadSearchProvider) + encodeURIComponent(input.value);
-            
+
             console.log(query);
             window.location.href = query;
         }
