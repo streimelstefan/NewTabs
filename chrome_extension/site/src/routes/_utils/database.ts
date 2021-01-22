@@ -52,6 +52,7 @@ class Database {
                 return await this.setToLocalStorage(path, data);
 
             case DatabaseProvider.ChromeStorage:
+                return await this.setToChromeStorage(path, data, syncing);
 
             case DatabaseProvider.CloudStorage:
                 console.error("Provider Cloud is not supported yet");
@@ -131,6 +132,20 @@ class Database {
         }
         localStorage.setItem(path, JSON.stringify(data));
         return true;
+    }
+
+    private async setToChromeStorage(path: string, data: any, syncing: boolean): Promise<boolean> {
+        return new Promise<boolean>((res, rej) => {
+            if (syncing) {
+                chrome.storage.sync.set({[path]: JSON.stringify(data)}, () => {
+                    res(true); 
+                });
+            } else {
+                chrome.storage.local.set({[path]: JSON.stringify(data)}, () => {
+                    res(true);
+                });
+            }
+        });
     }
 }
 
