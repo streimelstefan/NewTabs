@@ -125,11 +125,7 @@ class Database {
      * @param path Path where data should be saved to
      * @param data Data to be saved
      */
-    private async setToLocalStorage(path: string, data: any): Promise<boolean> {
-        if (typeof data === "string") {
-            localStorage.setItem(path, data);
-            return true;
-        }
+    private async setToLocalStorage(path: string, data: any): Promise<boolean> {F
         localStorage.setItem(path, JSON.stringify(data));
         return true;
     }
