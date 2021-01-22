@@ -77,7 +77,7 @@ class Database {
      * Returns the provider that is currently in use
      */
     public async getProvider(): Promise<DatabaseProvider> {
-        return DatabaseProvider.LocalStorage;
+        return this.provider;
     }
 
     /**
