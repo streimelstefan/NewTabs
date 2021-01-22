@@ -1,17 +1,24 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import {getIfImgIsTooOld, getImgFromDatabase, loadImgFromUrl, saveImgToDatabase} from './_utils/background';
+	import { onDestroy, onMount } from 'svelte';
+	import { background } from './_utils/background';
+	import type { ImgData } from './_utils/background';
+	
+	let containerDiv: HTMLElement;
+	
+	let unsubscribeBackground;
+	onMount(() => {
+		unsubscribeBackground = background.subscribe((img: ImgData) => {
+			if (img !== null) {	
+				console.log(img);
+				containerDiv.style.backgroundImage = 'url(' + img.img + ')';
+			}
+		});
+	});
 
-	onMount(async () => {
-		const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-		const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-		
-		const img = await loadImgFromUrl('https://picsum.photos/' + vw + '/' + vh);
-
-		console.log(await getIfImgIsTooOld((await saveImgToDatabase(img, vh, vw, new Date(Date.now()))).data));
-
-		console.log(await getImgFromDatabase());
-
+	onDestroy(() => {
+		if (unsubscribeBackground && {}.toString.call(unsubscribeBackground) === '[object Function]') {
+			unsubscribeBackground();
+		}
 	});
 </script>
 
@@ -24,7 +31,7 @@
 	}
 </style>
 
-<div class="background-img container">
+<div class="background-img container" bind:this={containerDiv}>
 
 </div>
 

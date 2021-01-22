@@ -1,11 +1,10 @@
+import { getIfOnServer } from './utils';
 
 enum DatabaseProvider {
     LocalStorage,
     ChromeStorage,
     CloudStorage
 }
-
-const onServer = !(typeof(process) === undefined);
 
 class Database {
 
@@ -18,7 +17,7 @@ class Database {
      * Loads the provider to be used. It is async so it needs some time. 
      */
     constructor() {
-        if (!onServer) {
+        if (!getIfOnServer()) {
             this.loadSavedProvider().then(provider => {
                 this.provider = provider;
             });

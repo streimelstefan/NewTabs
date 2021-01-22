@@ -1,7 +1,8 @@
 import { readable } from 'svelte/store';
+import { getIfOnServer } from './utils';
 import db from './database';
 
-interface ImgData {
+export interface ImgData {
     lastUpdate: Date;
     img: string;
     imgHeight: number;
@@ -9,7 +10,40 @@ interface ImgData {
 }
 
 export const background = readable(null, set => {
+    console.log("before check");
+    console.log(getIfOnServer());
+    if (getIfOnServer()) {
+        return;
+    }
 
+    console.log("getting Img");
+
+    async function start() {
+        console.log("executing");
+        const chachedImg = await getImgFromDatabase();
+        
+        if (chachedImg === null || getIfImgIsTooOld(chachedImg)) {
+            const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+            const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+            
+            const img = await loadImgFromUrl('https://picsum.photos/' + vw + '/' + vh);
+
+            const imgData: ImgData = {
+                img,
+                imgHeight: vh,
+                imgWidth: vw,
+                lastUpdate: new Date()
+            };
+
+            set(imgData);
+
+            await saveImgToDatabase(imgData.img, imgData.imgHeight, imgData.imgWidth, imgData.lastUpdate);
+        } else {
+            set(getImgFromDatabase());
+        }
+    }
+
+    start();
 });
 
 /**
@@ -56,7 +90,9 @@ export async function loadImgFromUrl(url: string): Promise<string> {
  * Returnes the Imaged saved in the database
  */
 export async function getImgFromDatabase(): Promise<ImgData> {
-    return await db.get('backgroundImg');
+    const data: ImgData = await db.get('backgroundImg');
+    data.lastUpdate = new Date(data.lastUpdate);
+    return data;
 }
 
 /**
