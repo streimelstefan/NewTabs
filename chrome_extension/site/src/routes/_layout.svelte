@@ -9,7 +9,6 @@
 	onMount(() => {
 		unsubscribeBackground = background.subscribe((img: ImgData) => {
 			if (img !== null) {	
-				console.log(img);
 				containerDiv.style.backgroundImage = 'url(' + img.img + ')';
 			}
 		});
@@ -32,7 +31,7 @@
 </style>
 
 <div class="background-img container" bind:this={containerDiv}>
-
+	<slot/>
 </div>
 
 
