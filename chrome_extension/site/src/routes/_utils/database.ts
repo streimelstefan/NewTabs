@@ -5,6 +5,8 @@ enum DatabaseProvider {
     CloudStorage
 }
 
+const onServer = !(typeof(process) === undefined);
+
 class Database {
 
     /**
@@ -16,9 +18,11 @@ class Database {
      * Loads the provider to be used. It is async so it needs some time. 
      */
     constructor() {
-        this.loadSavedProvider().then(provider => {
-            this.provider = provider;
-        });
+        if (!onServer) {
+            this.loadSavedProvider().then(provider => {
+                this.provider = provider;
+            });
+        }
     }
 
     /**
@@ -144,6 +148,12 @@ class Database {
         return true;
     }
 
+    /**
+     * Saves the data provided to Chrome Storage
+     * @param path Path under wich to store the data
+     * @param data Data to be saved
+     * @param syncing If the data should be in the synced storage or not
+     */
     private async setToChromeStorage(path: string, data: any, syncing: boolean): Promise<boolean> {
         return new Promise<boolean>((res, rej) => {
             if (syncing) {

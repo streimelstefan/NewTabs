@@ -1,12 +1,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {loadImgFromUrl} from './_utils/background';
+	import {getIfImgIsTooOld, getImgFromDatabase, loadImgFromUrl, saveImgToDatabase} from './_utils/background';
 
 	onMount(async () => {
 		const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 		const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
 		
-		console.log(await loadImgFromUrl('https://picsum.photos/' + vw + '/' + vh));
+		const img = await loadImgFromUrl('https://picsum.photos/' + vw + '/' + vh);
+
+		console.log(await getIfImgIsTooOld((await saveImgToDatabase(img, vh, vw, new Date(Date.now()))).data));
+
+		console.log(await getImgFromDatabase());
+
 	});
 </script>
 

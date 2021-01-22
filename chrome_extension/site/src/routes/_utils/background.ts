@@ -36,7 +36,7 @@ export async function saveImgToDatabase(img: string, imgHeight: number, imgWidth
  * Loads Image from an URL and returns the string as a base64 encoded string
  * @param url URL to load the Image from
  */
-export async function loadImgFromUrl(url: string): Promise<String> {
+export async function loadImgFromUrl(url: string): Promise<string> {
     return new Promise<any>((res, rej) => {
         const xhr = new XMLHttpRequest();
         xhr.onload = () => {
@@ -52,6 +52,22 @@ export async function loadImgFromUrl(url: string): Promise<String> {
     });
 }
 
-export async function saveImage(imgString: string) {
+/**
+ * Returnes the Imaged saved in the database
+ */
+export async function getImgFromDatabase(): Promise<ImgData> {
+    return await db.get('backgroundImg');
+}
+
+/**
+ * Checks if the date on the imgData is older than one week. If the img
+ * is older than one week true will be returned
+ * @param imgData Image to be checked
+ */
+export async function getIfImgIsTooOld(imgData: ImgData): Promise<boolean> {
+    const oneWeekAgo = -1000 * 60 * 60 * 24 * 7;
+    const currentTime = new Date().getTime();
+    const imgTime = imgData.lastUpdate.getTime();
+    return (currentTime - imgTime) < oneWeekAgo;
 }
 
