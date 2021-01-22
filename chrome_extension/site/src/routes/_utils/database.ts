@@ -161,4 +161,4 @@ class Database {
 
 const db = new Database();
 
-export = db;
+export default db;

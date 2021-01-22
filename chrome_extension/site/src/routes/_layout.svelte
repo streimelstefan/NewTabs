@@ -1,8 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import {loadImgFromUrl} from './_utils/background';
 
-	onMount(() => {
-
+	onMount(async () => {
+		const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+		const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+		
+		console.log(await loadImgFromUrl('https://picsum.photos/' + vw + '/' + vh));
 	});
 </script>
 
