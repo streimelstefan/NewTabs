@@ -12,15 +12,6 @@ export const background = readable(null, set => {
 });
 
 /**
- * Loads a picture 
- * 
- * @param url The url to get the picture from
- */
-export async function loadImage(url: string) {
-    
-}
-
-/**
  * Loads Image from an URL and returns the string as a base64 encoded string
  * @param url URL to load the Image from
  */
