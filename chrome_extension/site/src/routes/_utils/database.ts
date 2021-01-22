@@ -108,15 +108,17 @@ class Database {
      * @param syncing Wether or not the syncing api should be used 
      */
     private async getFromChromeStorage(path: string, syncing: boolean): Promise<any> {
-        if (syncing) {
-            chrome.storage.sync.get([path], data => {
-                return data;
-            });
-        } else {
-            chrome.storage.local.get([path], data => {
-                return data;
-            })
-        }
+        return new Promise<any>((res, rej) => {
+            if (syncing) {
+                chrome.storage.sync.get([path], data => {
+                    res(JSON.parse(data[path]));
+                });
+            } else {
+                chrome.storage.local.get([path], data => {
+                    res(JSON.parse(data[path]));
+                });
+            }
+        });
     }
 
     /**
