@@ -7,7 +7,7 @@ interface ImgData {
     largestHeight: number;
 }
 
-const background = readable(null, set => {
+export const background = readable(null, set => {
 
 });
 
@@ -16,17 +16,18 @@ const background = readable(null, set => {
  * 
  * @param url The url to get the picture from
  */
-async function loadImage(url: string) {
-    let reader = new FileReader();
-    reader.onloadend = function () {
-        chrome.storage.local.set( { Image : reader.result } );
-        chrome.storage.local.set({LIG: new Date()});
-        if (callback) {
-            callback();
-        }
-    };
-    let imgxhr = new XMLHttpRequest();
-    imgxhr.open("GET", url);
+export async function loadImage(url: string) {
+    
 }
 
-export = background;
+export async function loadImgFromUrl(url: string): Promise<any> {
+
+}
+
+export async function encodeImgToString(img): Promise<string> {
+    return "";
+}
+
+export async function saveImage(imgString: string) {
+}
+
