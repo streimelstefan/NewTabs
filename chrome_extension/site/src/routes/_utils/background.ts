@@ -10,19 +10,19 @@ export interface ImgData {
 }
 
 export const background = readable(null, set => {
-    console.log("before check");
-    console.log(getIfOnServer());
     if (getIfOnServer()) {
         return;
     }
 
-    console.log("getting Img");
 
     async function start() {
-        console.log("executing");
         const chachedImg = await getImgFromDatabase();
-        
-        if (chachedImg === null || getIfImgIsTooOld(chachedImg)) {
+        console.log({
+            chachedImg,
+            imgTooOld: await getIfImgIsTooOld(chachedImg)
+        });
+        if (chachedImg === null || await getIfImgIsTooOld(chachedImg)) {
+            console.log("Getting new img");
             const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
             const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
             
@@ -39,7 +39,7 @@ export const background = readable(null, set => {
 
             await saveImgToDatabase(imgData.img, imgData.imgHeight, imgData.imgWidth, imgData.lastUpdate);
         } else {
-            set(getImgFromDatabase());
+            set(await getImgFromDatabase());
         }
     }
 
