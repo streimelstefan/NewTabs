@@ -75,6 +75,8 @@ class Database {
      * @param provider The new Provider to be used
      */
     public async setProvider(provider: DatabaseProvider): Promise<boolean> {
+        this.provider = provider;
+        localStorage.setItem('db.Provider', JSON.stringify(this.provider));
         return true;
     }
 
