@@ -10,10 +10,15 @@ class Database {
     /**
      * The provider that should be used to save and retrieve data
      */
-    public provider: DatabaseProvider;
+    public provider: DatabaseProvider = DatabaseProvider.LocalStorage;
 
+    /**
+     * Loads the provider to be used. It is async so it needs some time. 
+     */
     constructor() {
-
+        this.loadSavedProvider().then(provider => {
+            this.provider = provider;
+        });
     }
 
     /**
@@ -83,8 +88,13 @@ class Database {
     /**
      * Returns the Provider that should be used from localstorage.
      */
-    private async loadCurrentProvider(): Promise<DatabaseProvider> {
-        return DatabaseProvider.LocalStorage;
+    private async loadSavedProvider(): Promise<DatabaseProvider> {
+        const provider = localStorage.getItem('db.Provider');
+        if (provider === null) {
+            localStorage.setItem('db.Provider', JSON.stringify(DatabaseProvider.LocalStorage));
+            return DatabaseProvider.LocalStorage;
+        }
+        return JSON.parse(provider);
     }
 
     /**
