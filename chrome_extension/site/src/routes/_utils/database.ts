@@ -1,8 +1,8 @@
 
 enum DatabaseProvider {
-    Localhost,
+    LocalStorage,
     ChromeStorage,
-    Cloud
+    CloudStorage
 }
 
 class Database {
@@ -20,9 +20,23 @@ class Database {
      * Retrieves a entity coresponding to the path provided
      * 
      * @param path Path to the entity
+     * @param syncing If the data should be returned from a syncing database or should remain local
      */
-    public async get(path: string): Promise<any> {
+    public async get(path: string, syncing = false): Promise<any> {
+        switch (this.provider) {
+            case DatabaseProvider.LocalStorage:
+                return await this.getFromLocalStorage(path);
 
+            case DatabaseProvider.ChromeStorage:
+                return await this.getFromChromeStorage(path, syncing);            
+
+            case DatabaseProvider.CloudStorage:
+                console.error("Provider Cloud is not supported yet");
+                return null;
+
+            default:
+                break;
+        }
     }
 
     /**
@@ -30,8 +44,9 @@ class Database {
      * 
      * @param path The path under wich the data should be deposited
      * @param data The data to be deposited
+     * @param syncing If the data should be returned from a syncing database or should remain local
      */
-    public async set(path: string, data: any): Promise<boolean> {
+    public async set(path: string, data: any, syncing = false): Promise<boolean> {
         return true;
     }
 
@@ -49,14 +64,46 @@ class Database {
      * Returns the provider that is currently in use
      */
     public async getProvider(): Promise<DatabaseProvider> {
-        return DatabaseProvider.Localhost;
+        return DatabaseProvider.LocalStorage;
     }
 
     /**
      * Returns the Provider that should be used from localstorage.
      */
     private async loadCurrentProvider(): Promise<DatabaseProvider> {
-        return DatabaseProvider.Localhost;
+        return DatabaseProvider.LocalStorage;
+    }
+
+    /**
+     * Loads data from LocalStorage and returns it
+     * 
+     * @param path Path to retrieve data from
+     */
+    private async getFromLocalStorage(path: string): Promise<any> {
+        const data = localStorage.getItem(path);
+        try {
+            return JSON.parse(data);
+        } catch(error) {
+            console.error("Error parsing data retrieved from " + path + ". Data: " + data);
+        }
+    }
+
+    /**
+     * Loads data from ChromeStorage
+     * 
+     * @param path Path to retrieve data from
+     * @param syncing Wether or not the syncing api should be used 
+     */
+    private async getFromChromeStorage(path: string, syncing: boolean): Promise<any> {
+        if (syncing) {
+            chrome.storage.sync.get([path], data => {
+                return data;
+            });
+        } else {
+            chrome.storage.local.get([path], data => {
+                return data;
+            })
+        }
     }
 }
 
