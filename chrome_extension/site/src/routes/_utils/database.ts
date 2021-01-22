@@ -47,7 +47,19 @@ class Database {
      * @param syncing If the data should be returned from a syncing database or should remain local
      */
     public async set(path: string, data: any, syncing = false): Promise<boolean> {
-        return true;
+        switch (this.provider) {
+            case DatabaseProvider.LocalStorage:
+                return await this.setToLocalStorage(path, data);
+
+            case DatabaseProvider.ChromeStorage:
+
+            case DatabaseProvider.CloudStorage:
+                console.error("Provider Cloud is not supported yet");
+                return null;
+
+            default:
+                break;
+        }
     }
 
     /**
@@ -104,6 +116,21 @@ class Database {
                 return data;
             })
         }
+    }
+
+    /**
+     * Saves the data to local storage
+     * 
+     * @param path Path where data should be saved to
+     * @param data Data to be saved
+     */
+    private async setToLocalStorage(path: string, data: any): Promise<boolean> {
+        if (typeof data === "string") {
+            localStorage.setItem(path, data);
+            return true;
+        }
+        localStorage.setItem(path, JSON.stringify(data));
+        return true;
     }
 }
 
