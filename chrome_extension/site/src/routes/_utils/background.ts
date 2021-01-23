@@ -17,12 +17,7 @@ export const background = readable(null, set => {
 
     async function start() {
         const chachedImg = await getImgFromDatabase();
-        console.log({
-            chachedImg,
-            imgTooOld: await getIfImgIsTooOld(chachedImg)
-        });
         if (chachedImg === null || await getIfImgIsTooOld(chachedImg)) {
-            console.log("Getting new img");
             const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
             const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
             
@@ -91,6 +86,11 @@ export async function loadImgFromUrl(url: string): Promise<string> {
  */
 export async function getImgFromDatabase(): Promise<ImgData> {
     const data: ImgData = await db.get('backgroundImg');
+
+    if (data === null) {
+        return null;
+    }
+
     data.lastUpdate = new Date(data.lastUpdate);
     return data;
 }
