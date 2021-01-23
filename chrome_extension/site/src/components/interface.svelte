@@ -1,9 +1,11 @@
 <script lang="ts">
     import { onDestroy, onMount } from "svelte";
-    import { autocomplete, interfaceValue } from '../routes/_utils/interface';
+    import { autocomplete, interfaceValue, length } from '../routes/_utils/interface';
 
     let interfaceValueInput: string; 
     let autoCompleteValueInput: string;
+
+    let interfaceRef: HTMLElement;
 
     let autoCompleteUnsubscribe;
 
@@ -11,13 +13,19 @@
         interfaceValue.set(interfaceValueInput);
     }
 
-
+    $: {
+        if (interfaceValueInput !== undefined && interfaceValueInput !== null) {
+            length.set(interfaceValueInput.length);
+        }
+    }
 
     onMount(() => {
         autoCompleteValueInput = "fjdaksl";
         autoCompleteUnsubscribe = autocomplete.subscribe(data => {
-
+            autoCompleteValueInput = data;
         });
+
+        interfaceRef.focus();
     });
 
     onDestroy(() => {
@@ -102,7 +110,7 @@
 
 <div class="interface-field" autocomplete="off" autocapitalize="false" spellcheck="false">
     <form>    
-        <input class="interface-input" bind:value="{interfaceValueInput}" type="text" >
+        <input class="interface-input" bind:this="{interfaceRef}" bind:value="{interfaceValueInput}" type="text" >
     </form>
     <input readonly class="autocomplete" bind:value="{autoCompleteValueInput}" type="text">
 </div>

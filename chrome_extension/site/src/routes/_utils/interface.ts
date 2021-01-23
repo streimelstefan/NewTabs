@@ -1,4 +1,7 @@
 import { writable, readable } from 'svelte/store';
+import config from './config';
+import { getIfOnServer } from '../_utils/utils';
+import { getIfImgIsTooOld } from './background';
 
 export const interfaceValue = writable("");
 
@@ -34,5 +37,26 @@ export const clock = readable("", set => {
 });
 
 export const autocomplete = readable("", set => {
-    set("test");
+    const interfaceValueUnsubscribe = interfaceValue.subscribe(data => {
+        if (data === null || data === undefined) {
+            return;
+        }
+        config.getNextAutoComplete(data).then(autocomplete => {
+            set(autocomplete);
+        });
+    });
+
+    return () => {
+        interfaceValueUnsubscribe();
+    }
 });
+
+export const keys = readable(null, set => {
+    if (!getIfOnServer()) {
+        document.addEventListener('keyup', event => {
+            set(event);
+        });
+    }
+});
+
+export const length = writable(0);

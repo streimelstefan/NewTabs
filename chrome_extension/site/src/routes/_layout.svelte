@@ -12,6 +12,7 @@
 				containerDiv.style.backgroundImage = 'url(' + img.img + ')';
 			}
 		});
+
 	});
 
 	onDestroy(() => {
