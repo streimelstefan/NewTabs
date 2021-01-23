@@ -1,19 +1,21 @@
-import { backgroundAction, bingAction, categoryAction, duckduckgoAction, editAction, exportAction, googleAction, refreshAction, shortcutAction, standardAction, yahooAction } from './commands';
+import { backgroundAction, bingAction, categoryAction, duckduckgoAction, editAction, exportAction, googleAction, refreshAction, shortcutAction, setStandardSearchProviderAction, yahooAction, importAction } from './commands';
 import db from './database';
 import { getIfOnServer } from './utils';
+import { clearInterface } from './interface';
+import { backgroundAutoComplete, editAutoComplete, setStandardSearchProviderAutoComplete, exportAutoComplete, importAutoComplete, categoryAutoComplete, shortcutAutoComplete, yahooAutoComplete, bingAutoComplete, duckduckgoAutoComplete, googleAutoComplete, refreshAutoComplete } from './advancedAutoComplete';
 
 interface Shortcut {
     key: string;
     url: string;
     name: string;
-    stopFromSeeing: false;
+    stopFromSeeing: boolean;
     category: string;
     color: string;
 }
 
 interface Command {
     key: string;
-    action: (query: any) => void;
+    action: (query: string[]) => Promise<boolean>;
     stopFromSeeing: boolean;
 }
 
@@ -25,7 +27,6 @@ interface SearchProvider {
 interface SaveConfig {
     useBackgroundPhoto: boolean;
     shortCuts: Shortcut[];
-    commands: Command[];
     standardSearchProvider: string;
     searchProviders: SearchProvider[];
 }
@@ -38,6 +39,8 @@ class Config {
             this.load();
         }
     }
+
+    public advancedAutocompleteActive = false;
 
     /**
      * Returns the Shortcut array
@@ -91,16 +94,58 @@ class Config {
         return await this.getNextAutoCompleteShortcuts(search);
     }
 
+    public async getSearchProviderPrefixOf(provider: string): Promise<string> {
+        const wantedProvider = await this.getSearchProvider(provider);
+
+        if (wantedProvider !== undefined) {
+            return wantedProvider.searchPrefix;
+        }
+        return "";
+    }
+
+    public async getSearchProvider(provider: string): Promise<SearchProvider | null> {
+        if (await this.isSearchProvider(provider)) {
+            for (let i = 0; i < this.searchProviders.length; i++) {
+                if (this.searchProviders[i].name === provider) 
+                    return this.searchProviders[i];
+            }
+            return null;
+        }
+    }
+
+    public async getCommandOfKey(key: string) {
+        for (let i = 0; i < this.commands.length; i++) {
+            if (this.commands[i].key === key) {
+                return this.commands[i];
+            }
+        }
+    }
+
     private async save() {
         const data: SaveConfig = {
             searchProviders: this.searchProviders,
-            commands: this.commands,
             shortCuts: this.shortCuts,
             standardSearchProvider: this.standardSearchProvider,
             useBackgroundPhoto: this.useBackgroundPhoto
         };
 
         await db.set('config', data, true);
+    }
+
+    public async executeCommand(command: string) {
+        command = command.slice(1, command.length);
+        console.log(command);
+        for (let i = 0; i < this.commands.length; i++) {
+            const commandParts = command.split(' ');
+            if (this.commands[i].key === commandParts[0]) {
+                console.log(this.commands[i]);
+                commandParts.shift();
+                if (await this.commands[i].action(commandParts)) {
+                    console.log("Clearing");
+                    clearInterface.set(true);
+                }
+            }
+        }
     }
 
     private async getNextAutoCompleteCommands(search: string) {
@@ -126,13 +171,12 @@ class Config {
         }
 
         this.searchProviders = data.searchProviders;
-        this.commands = data.commands;
         this.shortCuts = data.shortCuts;
         this.standardSearchProvider = data.standardSearchProvider;
         this.useBackgroundPhoto = data.useBackgroundPhoto;
     }
 
-    private async isSearchProvider(provider: string) {
+    public async isSearchProvider(provider: string) {
         for (let i = 0; i < this.searchProviders.length; i++) {
             if (this.searchProviders[i].name === provider) return true;
         }
@@ -158,67 +202,79 @@ class Config {
         }
     ];
 
-    private standardSearchProvider = 'g';
+    private standardSearchProvider = 'Google';
 
     private commands = [
         {
             key: 'backgroundPhoto',
             action: backgroundAction,
+            autoComplete: backgroundAutoComplete,
             stopFromSeeing: false
         },
         {
             key: 'edit',
             action: editAction,
+            autoComplete: editAutoComplete,
             stopFromSeeing: false
         },
         {
             key: 'standard',
-            action: standardAction,
+            action: setStandardSearchProviderAction,
+            autoComplete: setStandardSearchProviderAutoComplete,
             stopFromSeeing: false
         },
         {
             key: 'export',
             action: exportAction,
+            autoComplete: exportAutoComplete,
             stopFromSeeing: false
         },
         {
             key: 'import',
-            action: exportAction,
+            action: importAction,
+            autoComplete: importAutoComplete,
             stopFromSeeing: false
         },
         {
             key: 'cat',
             action: categoryAction,
+            autoComplete: categoryAutoComplete,
             stopFromSeeing: false
         },
         {
             key: 'sc',
             action: shortcutAction,
+            autoComplete: shortcutAutoComplete,
             stopFromSeeing: false
         },
         {
             key: 'y',
             action: yahooAction,
+            autoComplete: yahooAutoComplete,
             stopFromSeeing: false
         },
         {
             key: 'b',
             action: bingAction,
+            autoComplete: bingAutoComplete,
             stopFromSeeing: false
         },
         {
             key: 'd',
             action: duckduckgoAction,
+            autoComplete: duckduckgoAutoComplete,
             stopFromSeeing: false
         },
         {
             key: 'g',
             action: googleAction,
+            autoComplete: googleAutoComplete,
             stopFromSeeing: false
         },
         {
             key: 'r',
             action: refreshAction,
+            autoComplete: refreshAutoComplete,
             stopFromSeeing: false
         }
     ];

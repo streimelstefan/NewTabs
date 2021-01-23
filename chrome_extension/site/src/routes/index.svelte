@@ -1,10 +1,13 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
 	import Interface from '../components/interface.svelte';
+	import Clock from '../components/clock.svelte';
+
+	import { onDestroy, onMount } from 'svelte';
 	import { keys, length } from './_utils/interface';
 
 	let showInterface = false;
 	let interfaceLength = 0;
+	let lastInterfaceLength = 0;
 
 	let skipInterfaceDissapearance = false;
 
@@ -13,19 +16,24 @@
 	onMount(() => {
 		keysUnsubscribe = keys.subscribe(key => {
 			if (key === null) return;
-			showInterface = true;
+
+			if (!key.key.startsWith('F')) {
+				showInterface = true;
+			}
 
 			if (interfaceLength === 0 && key.code === 'Backspace') {
-				if (!skipInterfaceDissapearance) {
+				if (!skipInterfaceDissapearance && lastInterfaceLength !== 0) {
 					skipInterfaceDissapearance = true;
 				} else {
 					showInterface = false;
 					skipInterfaceDissapearance = false;
+					lastInterfaceLength = 0;
 				}
 			}
 		})
 
 		lengthUnsubscribe = length.subscribe(length => {
+			lastInterfaceLength = interfaceLength;
 			interfaceLength = length;
 		});
 	});
@@ -41,7 +49,7 @@
 <style>
 	.center {
 		position: absolute;
-		top: 50%;
+		top: 45%;
 		left: 50%;
 
 		transform: translate(-50%, -50%);
@@ -52,10 +60,9 @@
 	}
 </style>
 
-{#if showInterface}
-	
 <div class="center">
-	<Interface length="{interfaceLength}"></Interface>
-</div>
-
+{#if !showInterface}
+	<Clock></Clock>
 {/if}
+	<Interface hide="{!showInterface}" length="{interfaceLength}"></Interface>	
+</div>
