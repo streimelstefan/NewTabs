@@ -40,8 +40,6 @@ class Config {
         }
     }
 
-    public advancedAutocompleteActive = false;
-
     /**
      * Returns the Shortcut array
      */
@@ -85,6 +83,7 @@ class Config {
 
     public async getNextAutoComplete(search: string) {
         if (search.trimEnd() === "") {
+            console.log("empty");
             return "";
         }
         if (search.startsWith(':')) {
@@ -92,6 +91,17 @@ class Config {
         }
 
         return await this.getNextAutoCompleteShortcuts(search);
+    }
+
+    public async isCommandStart(input: string) {
+        input = input.slice(1, input.length);
+        input = input.split(' ')[0];
+        for (let i = 0; i < this.commands.length; i++) {
+            if (input === this.commands[i].key) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public async getSearchProviderPrefixOf(provider: string): Promise<string> {

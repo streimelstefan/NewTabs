@@ -1,9 +1,8 @@
 <script lang="ts">
-    import config from '../routes/_utils/config';
-
     import { onDestroy, onMount } from "svelte";
     import { autocomplete, interfaceValue, length, parseInterfaceValue, keys, clearInterface } from '../routes/_utils/interface';
-import { getIfOnServer } from '../routes/_utils/utils';
+    import AutocompleteList from './autocompleteList.svelte';
+
 
     export let hide = true;
 
@@ -55,14 +54,11 @@ import { getIfOnServer } from '../routes/_utils/utils';
             autoCompleteValueInput = data;
         });
 
-        interfaceValueUnsubscribe = interfaceValue.subscribe(data => {
-            interfaceValueInput = data;
-
-            if (interfaceValueInput == autoCompleteValueInput) {
-                config.advancedAutocompleteActive = true;
+        interfaceValueUnsubscribe = interfaceValue.subscribe(async data => {
+            if (data === undefined) {
+                return;
             }
-
-            if (interfaceValueInput === undefined) return; 
+            interfaceValueInput = data;
         });
 
         clearInterfaceUnsubscribe = clearInterface.subscribe(data => {
@@ -186,11 +182,40 @@ import { getIfOnServer } from '../routes/_utils/utils';
     form {
         width: 80%;
     }
+
+    .auto-complete-bottom {
+        position: absolute;
+
+        bottom: 0px;
+        left: 50%;
+
+        transform: translateY(100%);
+
+
+
+        z-index: 2;
+    }
+
+    .auto-complete-top {
+        position: absolute;
+
+        top: 0px;
+        left: 50%;
+
+        transform: translateY(-100%);
+
+
+
+        z-index: 2;
+    }
 </style>
 
 <div class="interface-field" class:hide="{hide}"  autocomplete="off" autocapitalize="false" spellcheck="false">
     <form on:submit|preventDefault="{submit}" >    
         <input class="interface-input" on:focus bind:this="{interfaceRef}" on:scroll="{updateScrool}" bind:value="{interfaceValueInput}" on:blur="{focusInput}" type="text" autofocus>
     </form>
+    <div class="auto-complete-top">    
+        <AutocompleteList/>
+    </div>
     <input readonly class="autocomplete" bind:this="{autoCompleteRef}" bind:value="{autoCompleteValueInput}" type="text">
 </div>

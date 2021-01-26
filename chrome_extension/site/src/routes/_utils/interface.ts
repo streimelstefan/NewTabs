@@ -19,18 +19,23 @@ export const clock = readable(getTimeString(new Date()), set => {
 
 export const autocomplete = writable("", set => {
     const interfaceValueUnsubscribe = interfaceValue.subscribe(data => {
-        if (data === null || data === undefined) {
-            return;
-        }
-        if (config.advancedAutocompleteActive) {
-            doAdvancedAutoComplete(data);
-            return;
-        }
-        config.getNextAutoComplete(data).then(autocomplete => {
-            set(autocomplete);
-        });
-    });
+        async function start() {
+                    if (data === null || data === undefined) {
+                return;
+            }
 
+            if (await config.isCommandStart(data)) {
+                doAdvancedAutoComplete(data);
+                return;
+            }
+            config.getNextAutoComplete(data).then(autocomplete => {
+                set(autocomplete);
+            });
+        }
+
+        start();
+    });
+    
     return () => {
         interfaceValueUnsubscribe();
     }

@@ -2,7 +2,6 @@ import config from './config';
 import { autocomplete } from './interface';
 
 export async function doAdvancedAutoComplete(query: string) {
-    query.trim();
     query = query.slice(1, query.length);
     const commandParts = query.split(' ');
     const command = await config.getCommandOfKey(commandParts[0])
@@ -20,18 +19,23 @@ export async function editAutoComplete(command: string[]) {
 }
 
 export async function setStandardSearchProviderAutoComplete(command: string[]) {
-    if (command.length === 2 && command[1].length === 0) {
-        return autocomplete.set(':' + command[0] + ' [ProviderName]');
+    autocomplete.set(':' + command[0] + ' [ProviderName]');
+
+    if (command.length === 1 || command.length === 2 && command[1].length === 0) {
+        return autocomplete.set(':' + command.join(' ') + (command.length > 1 ? "" : " ") + "[PROVIDER]");
     }
 
     if (command.length === 2 && command[1].length !== 0) {
         const providers = await config.getSearchProviders();
         for (let i = 0; i < providers.length; i++) {
             if (providers[i].name.startsWith(command[1])) {
-                return autocomplete.set(':' + command[0] + ' ' + providers[i].name);
+                command.pop();
+                return autocomplete.set(':' + command.join(' ') + ' ' + providers[i].name);
             }
         };
     }
+
+    console.log(command);
 
     return autocomplete.set(':' + command.join(' ') + ' !ERROR!');
 }
