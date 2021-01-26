@@ -3,13 +3,15 @@
 
     import { onDestroy, onMount } from "svelte";
     import { autocomplete, interfaceValue, length, parseInterfaceValue, keys, clearInterface } from '../routes/_utils/interface';
+import { getIfOnServer } from '../routes/_utils/utils';
 
     export let hide = true;
 
     let interfaceValueInput: string; 
     let autoCompleteValueInput: string;
 
-    let interfaceRef: HTMLElement;
+    let interfaceRef: HTMLInputElement;
+    let autoCompleteRef: HTMLInputElement;
 
 
     let autoCompleteUnsubscribe;
@@ -17,10 +19,27 @@
     let keyUnsubscribe;
     let clearInterfaceUnsubscribe;
 
+    let minInterfaceWidth = 10;
+
+    let inited = false;
+
 
 
     $: {
         interfaceValue.set(interfaceValueInput);
+        
+        
+        if (inited) {
+            
+        /*    if (minInterfaceWidth > interfaceRef.value.length) {
+                interfaceRef.size = minInterfaceWidth;
+            } else {
+                console.log({
+                    length: interfaceRef.value.length,
+                });
+                interfaceRef.size = interfaceRef.value.length;
+            }*/
+        }
     }
 
     $: {
@@ -30,6 +49,7 @@
     }
 
     onMount(() => {
+        inited = true;
         autoCompleteValueInput = "fjdaksl";
         autoCompleteUnsubscribe = autocomplete.subscribe(data => {
             autoCompleteValueInput = data;
@@ -86,13 +106,18 @@
         interfaceRef.focus();
     }
 
+    function updateScrool() {
+        console.log(interfaceRef.scrollLeft);
+
+        autoCompleteRef.scrollTo({left: interfaceRef.scrollLeft});
+    }
+
 </script>
 
 <style>
 
     input {
         height: 100%;
-        width: 100%;
         
         letter-spacing: 0.2rem;
         font-size: 4rem;
@@ -129,7 +154,6 @@
         
         color: #FFFFFF;
 
-        width: calc(100% - 4rem);
         height: 10vh;
         opacity: 1;
         z-index: 2;
@@ -158,11 +182,15 @@
     .hide {
         opacity: 0;
     }
+
+    form {
+        width: 80%;
+    }
 </style>
 
 <div class="interface-field" class:hide="{hide}"  autocomplete="off" autocapitalize="false" spellcheck="false">
     <form on:submit|preventDefault="{submit}" >    
-        <input class="interface-input" on:focus bind:this="{interfaceRef}" bind:value="{interfaceValueInput}" on:blur="{focusInput}" type="text" autofocus>
+        <input class="interface-input" on:focus bind:this="{interfaceRef}" on:scroll="{updateScrool}" bind:value="{interfaceValueInput}" on:blur="{focusInput}" type="text" autofocus>
     </form>
-    <input readonly class="autocomplete" bind:value="{autoCompleteValueInput}" type="text">
+    <input readonly class="autocomplete" bind:this="{autoCompleteRef}" bind:value="{autoCompleteValueInput}" type="text">
 </div>

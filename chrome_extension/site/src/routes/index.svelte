@@ -30,7 +30,7 @@
 					lastInterfaceLength = 0;
 				}
 			}
-		})
+		});
 
 		lengthUnsubscribe = length.subscribe(length => {
 			lastInterfaceLength = interfaceLength;

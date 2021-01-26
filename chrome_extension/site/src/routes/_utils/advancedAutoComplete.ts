@@ -20,8 +20,6 @@ export async function editAutoComplete(command: string[]) {
 }
 
 export async function setStandardSearchProviderAutoComplete(command: string[]) {
-    console.log(command);
-    console.log(command[1].length);
     if (command.length === 2 && command[1].length === 0) {
         return autocomplete.set(':' + command[0] + ' [ProviderName]');
     }

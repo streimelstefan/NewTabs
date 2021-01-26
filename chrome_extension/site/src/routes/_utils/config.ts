@@ -134,14 +134,11 @@ class Config {
 
     public async executeCommand(command: string) {
         command = command.slice(1, command.length);
-        console.log(command);
         for (let i = 0; i < this.commands.length; i++) {
             const commandParts = command.split(' ');
             if (this.commands[i].key === commandParts[0]) {
-                console.log(this.commands[i]);
                 commandParts.shift();
                 if (await this.commands[i].action(commandParts)) {
-                    console.log("Clearing");
                     clearInterface.set(true);
                 }
             }
