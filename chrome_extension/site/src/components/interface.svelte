@@ -1,36 +1,40 @@
 <script lang="ts">
     import { onDestroy, onMount } from "svelte";
-    import { autocomplete, interfaceValue, length, parseInterfaceValue, keys, clearInterface } from '../routes/_utils/interface';
-    import AutocompleteList from './autocompleteList.svelte';
-
+    import {
+        autocomplete,
+        interfaceValue,
+        length,
+        parseInterfaceValue,
+        keys,
+        clearInterface,
+    } from "../routes/_utils/interface";
+    import AutocompleteList from "./autocompleteList.svelte";
 
     export let hide = true;
 
-    let interfaceValueInput: string; 
+    let interfaceValueInput: string;
     let autoCompleteValueInput: string;
 
     let interfaceRef: HTMLInputElement;
     let autoCompleteRef: HTMLInputElement;
-
+    let sizerRef: HTMLDivElement;
 
     let autoCompleteUnsubscribe;
     let interfaceValueUnsubscribe;
     let keyUnsubscribe;
     let clearInterfaceUnsubscribe;
 
-    let minInterfaceWidth = 10;
+    let autoCompleteHintsOffset = 0;
+
+    // let minInterfaceWidth = 10;
 
     let inited = false;
 
-
-
     $: {
         interfaceValue.set(interfaceValueInput);
-        
-        
+
         if (inited) {
-            
-        /*    if (minInterfaceWidth > interfaceRef.value.length) {
+            /*    if (minInterfaceWidth > interfaceRef.value.length) {
                 interfaceRef.size = minInterfaceWidth;
             } else {
                 console.log({
@@ -50,39 +54,56 @@
     onMount(() => {
         inited = true;
         autoCompleteValueInput = "fjdaksl";
-        autoCompleteUnsubscribe = autocomplete.subscribe(data => {
+        autoCompleteUnsubscribe = autocomplete.subscribe((data) => {
             autoCompleteValueInput = data;
         });
 
-        interfaceValueUnsubscribe = interfaceValue.subscribe(async data => {
+        interfaceValueUnsubscribe = interfaceValue.subscribe(async (data) => {
             if (data === undefined) {
                 return;
             }
-            interfaceValueInput = data;
+            setTimeout(() => { // TODO: make it so it will do the calculations if the data is already in the input
+                interfaceValueInput = data;
+                let charOffset = interfaceRef.selectionStart;
+                let text = interfaceRef.value.substr(0, charOffset).replace(/ $/, "\xa0");
+                sizerRef.innerText = text;
+                autoCompleteHintsOffset = sizerRef.clientWidth;
+            }, 20);
         });
 
-        clearInterfaceUnsubscribe = clearInterface.subscribe(data => {
+        clearInterfaceUnsubscribe = clearInterface.subscribe((data) => {
             if (data) {
                 interfaceValueInput = "";
                 clearInterface.set(false);
             }
         });
 
-        keyUnsubscribe = keys.subscribe(data => {
-            if (data === null || autoCompleteValueInput === undefined || interfaceValueInput === undefined) {
+        keyUnsubscribe = keys.subscribe((data) => {
+            if (
+                data === null ||
+                autoCompleteValueInput === undefined ||
+                interfaceValueInput === undefined
+            ) {
                 return;
             }
-            if (data.key === 'Tab' && autoCompleteValueInput.length > interfaceValueInput.length) {
+
+            if (
+                data.key === "Tab" &&
+                autoCompleteValueInput.length > interfaceValueInput.length
+            ) {
                 interfaceValueInput = autoCompleteValueInput;
                 interfaceValue.set(interfaceValueInput);
             }
-        })
+        });
 
         interfaceRef.focus();
     });
 
     onDestroy(() => {
-        if (autoCompleteUnsubscribe && {}.toString.call(autoCompleteUnsubscribe) === '[object Function]') {
+        if (
+            autoCompleteUnsubscribe &&
+            {}.toString.call(autoCompleteUnsubscribe) === "[object Function]"
+        ) {
             autoCompleteUnsubscribe();
             interfaceValueUnsubscribe();
             keyUnsubscribe();
@@ -105,19 +126,54 @@
     function updateScrool() {
         console.log(interfaceRef.scrollLeft);
 
-        autoCompleteRef.scrollTo({left: interfaceRef.scrollLeft});
+        autoCompleteRef.scrollTo({ left: interfaceRef.scrollLeft });
     }
-
 </script>
 
-<style>
+<div
+    class="interface-field"
+    class:hide
+    autocomplete="off"
+    autocapitalize="false"
+    spellcheck="false"
+    style="--autocomplete-hints-offset: {autoCompleteHintsOffset}px"
+>
+    <form on:submit|preventDefault={submit}>
+        <input
+            class="interface-input"
+            bind:this={interfaceRef}
+            on:scroll={updateScrool}
+            bind:value={interfaceValueInput}
+            on:blur={focusInput}
+            type="text"
+            autofocus
+        />
+    </form>
+    <div class="auto-complete-top">
+        <AutocompleteList />
+    </div>
+    <div class="auto-complete-bottom">
+        <AutocompleteList up={false} />
+    </div>
+    <input
+        readonly
+        class="autocomplete"
+        bind:this={autoCompleteRef}
+        bind:value={autoCompleteValueInput}
+        type="text"
+    />
+    <div bind:this="{sizerRef}" id="sizer">
 
+    </div>
+</div>
+
+<style>
     input {
         height: 100%;
-        
+
         letter-spacing: 0.2rem;
         font-size: 4rem;
-        
+
         padding: 0;
         border: none;
         opacity: 1;
@@ -125,10 +181,22 @@
         color: white;
 
         background-color: transparent;
-    }  
+    }
 
-    input[type=text]:focus {
+    input[type="text"]:focus {
         outline: none;
+    }
+
+    #sizer {
+        position: absolute;
+        display: inline-block;
+        visibility: hidden;
+
+        letter-spacing: 0.2rem;
+        font-size: 4rem;
+
+        padding: 0;
+        border: none;
     }
 
     .autocomplete {
@@ -147,8 +215,8 @@
 
         top: 0;
         left: 2rem;
-        
-        color: #FFFFFF;
+
+        color: #ffffff;
 
         height: 10vh;
         opacity: 1;
@@ -168,7 +236,6 @@
         margin: 0;
         z-index: 1;
 
-        
         background-color: #61616123;
         border-radius: 2rem;
         padding-left: 2rem;
@@ -187,35 +254,25 @@
         position: absolute;
 
         bottom: 0px;
-        left: 50%;
+        left: var(--autocomplete-hints-offset);
 
-        transform: translateY(100%);
-
-
+        transform: translate(45%, 100%);
 
         z-index: 2;
+
+        transition: all .1s ease-in-out;
     }
 
     .auto-complete-top {
         position: absolute;
 
         top: 0px;
-        left: 50%;
+        left: var(--autocomplete-hints-offset);
 
-        transform: translateY(-100%);
-
-
+        transform: translate(45%, -100%);
 
         z-index: 2;
+
+        transition: all .1s ease-in-out;
     }
 </style>
-
-<div class="interface-field" class:hide="{hide}"  autocomplete="off" autocapitalize="false" spellcheck="false">
-    <form on:submit|preventDefault="{submit}" >    
-        <input class="interface-input" on:focus bind:this="{interfaceRef}" on:scroll="{updateScrool}" bind:value="{interfaceValueInput}" on:blur="{focusInput}" type="text" autofocus>
-    </form>
-    <div class="auto-complete-top">    
-        <AutocompleteList/>
-    </div>
-    <input readonly class="autocomplete" bind:this="{autoCompleteRef}" bind:value="{autoCompleteValueInput}" type="text">
-</div>

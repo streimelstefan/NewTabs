@@ -1,7 +1,7 @@
+import { clearInterface } from './interface';
 import { backgroundAction, bingAction, categoryAction, duckduckgoAction, editAction, exportAction, googleAction, refreshAction, shortcutAction, setStandardSearchProviderAction, yahooAction, importAction } from './commands';
 import db from './database';
 import { getIfOnServer } from './utils';
-import { clearInterface } from './interface';
 import { backgroundAutoComplete, editAutoComplete, setStandardSearchProviderAutoComplete, exportAutoComplete, importAutoComplete, categoryAutoComplete, shortcutAutoComplete, yahooAutoComplete, bingAutoComplete, duckduckgoAutoComplete, googleAutoComplete, refreshAutoComplete } from './advancedAutoComplete';
 
 interface Shortcut {

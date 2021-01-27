@@ -1,10 +1,11 @@
 <script lang="ts">
+	import * as interfaceHelper from './_utils/interface';
 	import { onDestroy, onMount } from 'svelte';
 	import { background } from './_utils/background';
 	import type { ImgData } from './_utils/background';
 	
 	let containerDiv: HTMLElement;
-	
+
 	let unsubscribeBackground;
 	onMount(() => {
 		unsubscribeBackground = background.subscribe((img: ImgData) => {

@@ -1,5 +1,22 @@
+import { keys, keysInited, autocomplete } from './interface';
 import config from './config'; 
-import { autocomplete } from './interface';
+import {readable} from 'svelte/store';
+
+let setAutocompleteHintTop;
+let setAutocompleteHintBottom;
+let setAutocompleteHint;
+
+export const autocompleteHintsTop = readable(null, (set) => {
+    setAutocompleteHintTop = set;
+});
+
+export const autocompleteHintsBottom = readable(null, (set) => {
+    setAutocompleteHintBottom = set;
+});
+
+export const autoCompleteHint = readable(null, (set) => {
+    setAutocompleteHint = set;
+});
 
 export async function doAdvancedAutoComplete(query: string) {
     query = query.slice(1, query.length);

@@ -3,6 +3,8 @@
     
     export let list: string[] = ["Google", "Yahoo", "DuckDuckGo"];
 
+    export let up = true;
+
     let localList: {
         item: string,
         stopShowing: boolean
@@ -76,11 +78,15 @@
         margin: 0;
         padding: 0;
     }
+
+    .down {
+        border-radius: 0 0 1rem 1rem;
+    }
 </style>
 
-<div class="container">
+<div class="container" class:down="{!up}">
     <ul>
-        {#each localList as item}
+        {#each localList as item (item.item)}
         <li class="item" on:click="{() => handleClick(item)}"  class:show="{!item.stopShowing}">
             { item.item }
         </li >

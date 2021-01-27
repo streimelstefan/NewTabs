@@ -6,6 +6,8 @@ import { doAdvancedAutoComplete } from './advancedAutoComplete'
 
 export const interfaceValue = writable("");
 
+
+
 export const clock = readable(getTimeString(new Date()), set => {
     const interval = setInterval(() => {
         const date = new Date();
@@ -49,6 +51,10 @@ export const keys = readable(null, set => {
     }
 });
 
+export const keysInited = new Promise((res, rej) => {
+    res(true);
+});
+
 export const length = writable(0);
 
 function getTimeString(date: Date): string {
@@ -80,6 +86,7 @@ function getTimeString(date: Date): string {
 export const clearInterface = writable(false);
 
 export async function parseInterfaceValue(value: string) {
+    if (value === undefined) return;
     if (value.startsWith(':')) {
         return config.executeCommand(value);
     }
