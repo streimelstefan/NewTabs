@@ -23,18 +23,30 @@ export async function editAutoComplete(command: string[]) {
 export async function setStandardSearchProviderAutoComplete(command: string[]) {
     autocomplete.set(':' + command[0] + ' [ProviderName]');
 
-    if (command.length === 1 || command.length === 2 && command[1].length === 0) {
+    console.log(config.advancedAutocompleteHintSelected);
+
+    if (command.length === 1) {
         return autocomplete.set(':' + command.join(' ') + (command.length > 1 ? "" : " ") + "[PROVIDER]");
     }
 
-    if (command.length === 2 && command[1].length !== 0) {
+    if (command.length === 2) {
         const providers = await config.getSearchProviders();
         for (let i = 0; i < providers.length; i++) {
-            if (providers[i].name.startsWith(command[1])) {
+            console.log({
+                selected: config.advancedAutocompleteHintSelected,
+                provider: providers[i].name,
+                command
+            });
+            if (config.advancedAutocompleteHintSelected === providers[i].name) {
+                return autocomplete.set(':' + command.join(' ') + providers[i].name)
+            }
+            if (providers[i].name.startsWith(command[1]) && command[i].length !== 0) {
                 command.pop();
                 return autocomplete.set(':' + command.join(' ') + ' ' + providers[i].name);
             }
         };
+
+        return autocomplete.set(':' + command.join(' ') + (command.length > 1 ? "" : " ") + "[PROVIDER]");
     }
 
     console.log(command);

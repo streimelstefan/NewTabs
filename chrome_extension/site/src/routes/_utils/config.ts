@@ -1,4 +1,4 @@
-import { clearInterface } from './interface';
+import { clearInterface, reCalculateAutocomplete } from './interface';
 import { backgroundAction, bingAction, categoryAction, duckduckgoAction, editAction, exportAction, googleAction, refreshAction, shortcutAction, setStandardSearchProviderAction, yahooAction, importAction } from './commands';
 import db from './database';
 import { getIfOnServer } from './utils';
@@ -188,6 +188,12 @@ class Config {
         }
         return false;
     }
+
+    public async reacalculateAutocomplete() {
+        reCalculateAutocomplete();
+    }
+
+    public advancedAutocompleteHintSelected = "";
 
     private searchProviders: SearchProvider[] = [
         {

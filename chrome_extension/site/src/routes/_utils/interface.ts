@@ -1,7 +1,7 @@
 import { writable, readable } from 'svelte/store';
 import config from './config';
 import { getIfOnServer } from '../_utils/utils';
-import { doAdvancedAutoComplete } from './advancedAutoComplete'
+import { doAdvancedAutoComplete, setStandardSearchProviderAutoComplete } from './advancedAutoComplete'
 
 export const interfaceValue = writable("");
 
@@ -16,23 +16,33 @@ export const clock = readable(getTimeString(new Date()), set => {
 	return () => clearInterval(interval);
 });
 
+let autocompleteSet;
+let lastInterfaceValue = "";
+
+export async function calculateAutocomplete(data: string) {
+    if (data === null || data === undefined) {
+        return;
+    }
+
+    lastInterfaceValue = data;
+
+    if (await config.isCommandStart(data)) {
+        doAdvancedAutoComplete(data);
+        return;
+    }
+    config.getNextAutoComplete(data).then(autocomplete => {
+        autocompleteSet(autocomplete);
+    });
+}
+
+export async function reCalculateAutocomplete() {
+    calculateAutocomplete(lastInterfaceValue);
+}
+
 export const autocomplete = writable("", set => {
+    autocompleteSet = set;
     const interfaceValueUnsubscribe = interfaceValue.subscribe(data => {
-        async function start() {
-                    if (data === null || data === undefined) {
-                return;
-            }
-
-            if (await config.isCommandStart(data)) {
-                doAdvancedAutoComplete(data);
-                return;
-            }
-            config.getNextAutoComplete(data).then(autocomplete => {
-                set(autocomplete);
-            });
-        }
-
-        start();
+        calculateAutocomplete(data);
     });
     
     return () => {

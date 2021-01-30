@@ -2,6 +2,7 @@
     import { keys } from "../routes/_utils/interface";
     import { onDestroy, onMount } from "svelte";
 import { getIfOnServer } from "../routes/_utils/utils";
+import config from "../routes/_utils/config";
 
     let sizer: HTMLDivElement;
 
@@ -48,7 +49,10 @@ import { getIfOnServer } from "../routes/_utils/utils";
                 }, 10);
                 currentIndex++;
             } else {
+                config.advancedAutocompleteHintSelected = localList[currentIndex].item;
+                config.reacalculateAutocomplete();
                 localList[currentIndex].stopShowing = true;
+                config.advancedAutocompleteHintSelected = localList[currentIndex].item;
                 const temp = currentIndex;
                 setTimeout(() => {
                     localList[temp].remove = true;
@@ -58,6 +62,7 @@ import { getIfOnServer } from "../routes/_utils/utils";
         }
 
         if (key.code === "ArrowDown") {
+            key.preventDefault();
             if (!up && lastActionUp) {
                 lastActionUp = false;
                 return;
@@ -65,6 +70,9 @@ import { getIfOnServer } from "../routes/_utils/utils";
 
             if (up) {
                 localList[currentIndex].stopShowing = true;
+                config.advancedAutocompleteHintSelected = localList[currentIndex].item;
+                config.reacalculateAutocomplete();
+                
                 const temp = currentIndex;
                 setTimeout(() => {
                     localList[temp].remove = true;
