@@ -267,7 +267,7 @@
         bottom: 0px;
         left: var(--autocomplete-hints-offset);
 
-        transform: translate(45%, 100%);
+        transform: translate(calc(0% + 3rem), 100%);
 
         z-index: 2;
 
@@ -280,7 +280,7 @@
         top: 0px;
         left: var(--autocomplete-hints-offset);
 
-        transform: translate(45%, -100%);
+        transform: translate(calc(0% + 3rem), -100%);
 
         z-index: 2;
 

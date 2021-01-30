@@ -4,85 +4,110 @@
 
     let unsubscribeKeys = keys.subscribe((key) => {
         if (key === null) return;
-        console.log(currentIndex);
+
+        if (currentIndex < 0) {
+            currentIndex = 0;
+        }
+        if (currentIndex >= localList.length) {
+            currentIndex = localList.length - 1;
+        }
 
         if (key.code === "ArrowUp") {
+            if (up && firstSwitch) {
+                firstSwitch = false;
+                return;
+            }
+
+            console.log({
+                up,
+                currentIndex
+            });
+
             if (up) {
-                localList[currentIndex].stopShowing = false;
+                localList[currentIndex].remove = false;
+                const temp = currentIndex;
+                setTimeout(() => {
+                    localList[temp].stopShowing = false;
+                }, 10);
                 currentIndex++;
             } else {
                 localList[currentIndex].stopShowing = true;
-                currentIndex--;
+                const temp = currentIndex;
+                setTimeout(() => {
+                    localList[temp].remove = true;
+                }, 500);
+                currentIndex++;
             }
         }
 
         if (key.code === "ArrowDown") {
+            if (up && firstSwitch) {
+                firstSwitch = false;
+                return;
+            }
+
+            console.log({
+                up,
+                currentIndex
+            });
+            
             if (up) {
                 localList[currentIndex].stopShowing = true;
+                const temp = currentIndex;
+                setTimeout(() => {
+                    localList[temp].remove = true;
+                }, 500);
                 currentIndex--;
             } else {
-                localList[currentIndex].stopShowing = false;
-                currentIndex++;
+                localList[currentIndex].remove = false;
+                const temp = currentIndex;
+                setTimeout(() => {
+                    localList[temp].stopShowing = false;
+                }, 10);
+                currentIndex--;
             }
         }
     });
 
     export let up = true;
-    let lastLength;
     export let list: string[] = [];
 
-    $: {
-        console.log({
-            lengthArr: localList.length,
-            lengthObj: Object.keys(localList).length,
-            lengthCast: JSON.parse(JSON.stringify(localList)).length,
-            localListString: JSON.stringify(localList),
-            localList
-        });
-    }
-
-    $: console.log(localList);
-
-    let currentIndex: number;
-    /*$: {
-
-        
-        if (internalUp !== up || lastLength != localList.length) {   
-            for (let item in localList) {
-                console.log(item);
-            } 
-            currentIndex = up ? 0 : localList.length;
-            internalUp = up;
-            console.log({
-                internalUp,
-                up,
-                localList: localList,
-                length: localList.length,
-                currentIndex,
-                update: internalUp !== up
-            });
-            lastLength = localList.length;
-        }
-    }*/
+    let firstSwitch = true;
 
     $: {
+        let changed = false;
         for (let item of list) {
             if (
                 localList.find((element) => element.item === item) === undefined
             ) {
+                changed = true;
                 localList.push({
                     item,
                     stopShowing: up,
                     id: Math.random(),
+                    remove: up
                 });
             }
         }
+
+        if (changed) {
+            currentIndex = 0;
+            
+            console.log({
+                localList
+            });
+        }
     }
+
+
+    let currentIndex: number;
+    
 
     let localList: {
         item: string;
         stopShowing: boolean;
         id: number;
+        remove: boolean;
     }[] = [];
 
     onDestroy(() => {
@@ -111,6 +136,7 @@
                 class="item"
                 on:click={() => handleClick(item)}
                 class:show={!item.stopShowing}
+                class:remove={item.remove}
             >
                 {item.item}
             </li>
@@ -135,6 +161,10 @@
     .show {
         transform: scaleX(1);
         opacity: 1;
+    }
+
+    .remove {
+        display: none;
     }
 
     .item:hover {
