@@ -76,7 +76,7 @@
                     .substr(0, charOffset)
                     .replace(/ $/, "\xa0");
                 sizerRef.innerText = text;
-                autoCompleteHintsOffset = sizerRef.clientWidth;
+                autoCompleteHintsOffset = sizerRef.clientWidth - 20;
             }, 20);
         });
 
@@ -181,6 +181,7 @@
         letter-spacing: 0.2rem;
         font-size: 4rem;
 
+
         padding: 0;
         border: none;
         opacity: 1;
@@ -222,6 +223,9 @@
 
         top: 0;
         left: 2rem;
+
+        width: calc(100% - 4rem);
+
 
         color: #ffffff;
 

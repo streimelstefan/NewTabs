@@ -23,16 +23,26 @@
 	});
 </script>
 
-<style>
+<style global lang="postcss">
+
+	/* only apply purgecss on utilities, per Tailwind docs */
+	/* purgecss start ignore */
+	@tailwind base;
+	@tailwind components;
+	/* purgecss end ignore */
+   
+	@tailwind utilities;
+
 	.background-img {
 		height: 100vh;
 		width: 100vw;
 		background-repeat: no-repeat;
     	background-attachment: fixed;
 	}
+  
 </style>
 
-<div class="background-img container" bind:this={containerDiv}>
+<div class="background-img" bind:this={containerDiv}>
 	<slot/>
 </div>
 

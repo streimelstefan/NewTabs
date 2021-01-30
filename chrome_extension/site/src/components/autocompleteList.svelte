@@ -4,6 +4,8 @@
 
     let unsubscribeKeys = keys.subscribe(key => {
         if (key === null) return;
+        console.log(currentIndex);
+
 
         if (key.code === 'ArrowUp') {
             if (up) {
@@ -29,13 +31,42 @@
     
 
     export let up = true;
+    let internalUp;
+    let lastLength;
+
+    $: console.log({length: localList.length, localList});
 
     let currentIndex: number;
-    $: currentIndex = up ? 0 : localList.length;
+    $: {
 
+        
+        if (internalUp !== up || lastLength != localList.length) {    
+            currentIndex = up ? 0 : localList.length;
+            internalUp = up;
+            console.log({
+                internalUp,
+                up,
+                localList: localList,
+                length: localList.length,
+                currentIndex,
+                update: internalUp !== up
+            });
+            lastLength = localList.length;
+        }
+    }
     export let list: string[] = [];
 
-    $: console.log(list);
+    $: {
+        for (let item of list) {
+            if (localList.find(element => element.item === item) === undefined) {
+                localList.push({
+                    item,
+                    stopShowing: up,
+                    id: Math.random()
+                })
+            }
+        }
+    }
 
     let localList: {
         item: string,
@@ -43,15 +74,8 @@
         id: number
     }[] = [];
     
-    $: list.forEach(item => {
-        console.log('adding');
-            localList.push({
-                item,
-                stopShowing: !up,
-                id: Math.random()
-            });
-        });
     
+
     onDestroy(() => {
         if (unsubscribeKeys &&
             {}.toString.call(unsubscribeKeys) === "[object Function]") {
