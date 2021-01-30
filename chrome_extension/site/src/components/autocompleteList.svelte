@@ -1,6 +1,28 @@
 <script lang="ts">
     import { keys } from "../routes/_utils/interface";
-    import { onDestroy } from "svelte";
+    import { onDestroy, onMount } from "svelte";
+import { getIfOnServer } from "../routes/_utils/utils";
+
+    let sizer: HTMLDivElement;
+
+    let currentIndex: number;
+    
+    let minWidth = 0;
+    let largestItem = "";
+    
+    let inited = false;
+
+    let localList: {
+        item: string;
+        stopShowing: boolean;
+        id: number;
+        remove: boolean;
+    }[] = [];
+
+    export let up = true;
+    export let list: string[] = [];
+
+    let lastActionUp = false;
 
     let unsubscribeKeys = keys.subscribe((key) => {
         if (key === null) return;
@@ -13,15 +35,10 @@
         }
 
         if (key.code === "ArrowUp") {
-            if (up && firstSwitch) {
-                firstSwitch = false;
+            if (up && !lastActionUp) {
+                lastActionUp = true;
                 return;
             }
-
-            console.log({
-                up,
-                currentIndex
-            });
 
             if (up) {
                 localList[currentIndex].remove = false;
@@ -41,16 +58,11 @@
         }
 
         if (key.code === "ArrowDown") {
-            if (up && firstSwitch) {
-                firstSwitch = false;
+            if (!up && lastActionUp) {
+                lastActionUp = false;
                 return;
             }
 
-            console.log({
-                up,
-                currentIndex
-            });
-            
             if (up) {
                 localList[currentIndex].stopShowing = true;
                 const temp = currentIndex;
@@ -69,11 +81,6 @@
         }
     });
 
-    export let up = true;
-    export let list: string[] = [];
-
-    let firstSwitch = true;
-
     $: {
         let changed = false;
         for (let item of list) {
@@ -91,24 +98,19 @@
         }
 
         if (changed) {
+            for (let item of localList) {
+                largestItem = item.item.length > largestItem.length ? item.item : largestItem;
+            }
+
+            if (inited) {
+                sizer.innerText = largestItem;
+                minWidth = sizer.clientWidth;
+            }
+
+
             currentIndex = 0;
-            
-            console.log({
-                localList
-            });
         }
     }
-
-
-    let currentIndex: number;
-    
-
-    let localList: {
-        item: string;
-        stopShowing: boolean;
-        id: number;
-        remove: boolean;
-    }[] = [];
 
     onDestroy(() => {
         if (
@@ -119,8 +121,16 @@
         }
     });
 
+    onMount(() => {
+        inited = true;
+
+        sizer.innerText = largestItem;
+        minWidth = sizer.clientWidth;
+
+        console.log(minWidth);
+    });
+
     function handleClick(item: { item: string; stopShowing: boolean }) {
-        console.log(item);
         item.stopShowing = true;
         localList = localList;
         setTimeout(() => {
@@ -129,7 +139,7 @@
     }
 </script>
 
-<div class="container" class:down={!up}>
+<div class="container" class:down={!up} style="--autocomplete-min-width: {minWidth}px">
     <ul>
         {#each localList as item (item.id)}
             <li
@@ -143,10 +153,21 @@
         {/each}
     </ul>
 </div>
+<div id="sizer" bind:this={sizer}></div>
 
 <style>
     div {
         background-color: black;
+    }
+
+    #sizer {
+        position: absolute;
+        display: inline-block;
+        visibility: hidden;
+
+        font-weight: 600;
+
+        padding: 1rem;
     }
 
     .item {
@@ -172,7 +193,7 @@
     }
 
     .container {
-        min-width: 100px;
+        min-width: var(--autocomplete-min-width);
 
         font-weight: 600;
 

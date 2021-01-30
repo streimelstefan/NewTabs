@@ -5,8 +5,6 @@ import { doAdvancedAutoComplete } from './advancedAutoComplete'
 
 export const interfaceValue = writable("");
 
-
-
 export const clock = readable(getTimeString(new Date()), set => {
     const interval = setInterval(() => {
         const date = new Date();

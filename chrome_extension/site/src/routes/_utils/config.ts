@@ -83,7 +83,6 @@ class Config {
 
     public async getNextAutoComplete(search: string) {
         if (search.trimEnd() === "") {
-            console.log("empty");
             return "";
         }
         if (search.startsWith(':')) {

@@ -39,17 +39,6 @@
 
     $: {
         interfaceValue.set(interfaceValueInput);
-
-        if (inited) {
-            /*    if (minInterfaceWidth > interfaceRef.value.length) {
-                interfaceRef.size = minInterfaceWidth;
-            } else {
-                console.log({
-                    length: interfaceRef.value.length,
-                });
-                interfaceRef.size = interfaceRef.value.length;
-            }*/
-        }
     }
 
     $: {
