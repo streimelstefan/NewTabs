@@ -1,13 +1,12 @@
 <script lang="ts">
-    import { keys } from '../routes/_utils/interface';
-    import {onDestroy } from 'svelte';
+    import { keys } from "../routes/_utils/interface";
+    import { onDestroy } from "svelte";
 
-    let unsubscribeKeys = keys.subscribe(key => {
+    let unsubscribeKeys = keys.subscribe((key) => {
         if (key === null) return;
         console.log(currentIndex);
 
-
-        if (key.code === 'ArrowUp') {
+        if (key.code === "ArrowUp") {
             if (up) {
                 localList[currentIndex].stopShowing = false;
                 currentIndex++;
@@ -16,8 +15,8 @@
                 currentIndex--;
             }
         }
-        
-        if (key.code === 'ArrowDown') {
+
+        if (key.code === "ArrowDown") {
             if (up) {
                 localList[currentIndex].stopShowing = true;
                 currentIndex--;
@@ -28,19 +27,30 @@
         }
     });
 
-    
-
     export let up = true;
-    let internalUp;
     let lastLength;
+    export let list: string[] = [];
 
-    $: console.log({length: localList.length, localList});
+    $: {
+        console.log({
+            lengthArr: localList.length,
+            lengthObj: Object.keys(localList).length,
+            lengthCast: JSON.parse(JSON.stringify(localList)).length,
+            localListString: JSON.stringify(localList),
+            localList
+        });
+    }
+
+    $: console.log(localList);
 
     let currentIndex: number;
-    $: {
+    /*$: {
 
         
-        if (internalUp !== up || lastLength != localList.length) {    
+        if (internalUp !== up || lastLength != localList.length) {   
+            for (let item in localList) {
+                console.log(item);
+            } 
             currentIndex = up ? 0 : localList.length;
             internalUp = up;
             console.log({
@@ -53,46 +63,60 @@
             });
             lastLength = localList.length;
         }
-    }
-    export let list: string[] = [];
+    }*/
 
     $: {
         for (let item of list) {
-            if (localList.find(element => element.item === item) === undefined) {
+            if (
+                localList.find((element) => element.item === item) === undefined
+            ) {
                 localList.push({
                     item,
                     stopShowing: up,
-                    id: Math.random()
-                })
+                    id: Math.random(),
+                });
             }
         }
     }
 
     let localList: {
-        item: string,
-        stopShowing: boolean,
-        id: number
+        item: string;
+        stopShowing: boolean;
+        id: number;
     }[] = [];
-    
-    
 
     onDestroy(() => {
-        if (unsubscribeKeys &&
-            {}.toString.call(unsubscribeKeys) === "[object Function]") {
-                unsubscribeKeys();
-            }
-    })
+        if (
+            unsubscribeKeys &&
+            {}.toString.call(unsubscribeKeys) === "[object Function]"
+        ) {
+            unsubscribeKeys();
+        }
+    });
 
-    function handleClick(item: {item: string, stopShowing: boolean}) {
+    function handleClick(item: { item: string; stopShowing: boolean }) {
         console.log(item);
         item.stopShowing = true;
         localList = localList;
         setTimeout(() => {
             localList = localList.filter((data) => data.item !== item.item);
         }, 500);
-    }   
-
+    }
 </script>
+
+<div class="container" class:down={!up}>
+    <ul>
+        {#each localList as item (item.id)}
+            <li
+                class="item"
+                on:click={() => handleClick(item)}
+                class:show={!item.stopShowing}
+            >
+                {item.item}
+            </li>
+        {/each}
+    </ul>
+</div>
 
 <style>
     div {
@@ -100,12 +124,12 @@
     }
 
     .item {
-        padding: 1rem;    
-        padding-bottom: .5rem;
-        padding-top: .5rem;
+        padding: 1rem;
+        padding-bottom: 0.5rem;
+        padding-top: 0.5rem;
         transform: scaleX(0);
         opacity: 0;
-        transition: all .5s ease-in-out;
+        transition: all 0.5s ease-in-out;
     }
 
     .show {
@@ -122,13 +146,13 @@
 
         font-weight: 600;
 
-        padding-bottom: .5rem;
-        padding-top: .5rem;
+        padding-bottom: 0.5rem;
+        padding-top: 0.5rem;
 
         background-color: #61616123;
         border-radius: 1rem 1rem 0 0;
     }
- 
+
     ul {
         list-style-type: none;
         margin: 0;
@@ -139,13 +163,3 @@
         border-radius: 0 0 1rem 1rem;
     }
 </style>
-
-<div class="container" class:down="{!up}">
-    <ul>
-        {#each localList as item (item.id)}
-        <li class="item" on:click="{() => handleClick(item)}"  class:show="{!item.stopShowing}">
-            { item.item }
-        </li >
-        {/each}
-    </ul>
-</div>
