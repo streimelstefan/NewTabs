@@ -30,6 +30,13 @@
 
     let inited = false;
 
+    let autoCompleteList = [
+        'DuckDuckGo',
+        'Google',
+        'Yahoo',
+        'Bing'
+    ];
+
     $: {
         interfaceValue.set(interfaceValueInput);
 
@@ -62,10 +69,12 @@
             if (data === undefined) {
                 return;
             }
-            setTimeout(() => { // TODO: make it so it will do the calculations if the data is already in the input
-                interfaceValueInput = data;
+            setTimeout(() => {
+                // TODO: make it so it will do the calculations if the data is already in the input
                 let charOffset = interfaceRef.selectionStart;
-                let text = interfaceRef.value.substr(0, charOffset).replace(/ $/, "\xa0");
+                let text = interfaceRef.value
+                    .substr(0, charOffset)
+                    .replace(/ $/, "\xa0");
                 sizerRef.innerText = text;
                 autoCompleteHintsOffset = sizerRef.clientWidth;
             }, 20);
@@ -150,10 +159,10 @@
         />
     </form>
     <div class="auto-complete-top">
-        <AutocompleteList />
+        <AutocompleteList list="{autoCompleteList}" />
     </div>
     <div class="auto-complete-bottom">
-        <AutocompleteList up={false} />
+        <AutocompleteList list="{autoCompleteList}" up={false} />
     </div>
     <input
         readonly
@@ -162,9 +171,7 @@
         bind:value={autoCompleteValueInput}
         type="text"
     />
-    <div bind:this="{sizerRef}" id="sizer">
-
-    </div>
+    <div bind:this={sizerRef} id="sizer" />
 </div>
 
 <style>
@@ -260,7 +267,7 @@
 
         z-index: 2;
 
-        transition: all .1s ease-in-out;
+        transition: all 0.1s ease-in-out;
     }
 
     .auto-complete-top {
@@ -273,6 +280,6 @@
 
         z-index: 2;
 
-        transition: all .1s ease-in-out;
+        transition: all 0.1s ease-in-out;
     }
 </style>

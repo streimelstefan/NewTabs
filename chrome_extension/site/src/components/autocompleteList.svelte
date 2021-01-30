@@ -1,31 +1,63 @@
 <script lang="ts">
-    import { fade } from 'svelte/transition';
+    import { keys } from '../routes/_utils/interface';
+    import {onDestroy } from 'svelte';
+
+    let unsubscribeKeys = keys.subscribe(key => {
+        if (key === null) return;
+
+        if (key.code === 'ArrowUp') {
+            if (up) {
+                localList[currentIndex].stopShowing = false;
+                currentIndex++;
+            } else {
+                localList[currentIndex].stopShowing = true;
+                currentIndex--;
+            }
+        }
+        
+        if (key.code === 'ArrowDown') {
+            if (up) {
+                localList[currentIndex].stopShowing = true;
+                currentIndex--;
+            } else {
+                localList[currentIndex].stopShowing = false;
+                currentIndex++;
+            }
+        }
+    });
+
     
-    export let list: string[] = ["Google", "Yahoo", "DuckDuckGo"];
 
     export let up = true;
 
+    let currentIndex: number;
+    $: currentIndex = up ? 0 : localList.length;
+
+    export let list: string[] = [];
+
+    $: console.log(list);
+
     let localList: {
         item: string,
-        stopShowing: boolean
-    }[] = [
-        {
-            item: "Google",
-            stopShowing: false
-        },
-        {
-            item: "Yahoo", 
-            stopShowing: false
-        }
-    ];
-
-    $: () => {
-        list.forEach(item => {
-            localList.push({item, stopShowing: false});
+        stopShowing: boolean,
+        id: number
+    }[] = [];
+    
+    $: list.forEach(item => {
+        console.log('adding');
+            localList.push({
+                item,
+                stopShowing: !up,
+                id: Math.random()
+            });
         });
-    }
-
-    $: console.log(localList);
+    
+    onDestroy(() => {
+        if (unsubscribeKeys &&
+            {}.toString.call(unsubscribeKeys) === "[object Function]") {
+                unsubscribeKeys();
+            }
+    })
 
     function handleClick(item: {item: string, stopShowing: boolean}) {
         console.log(item);
@@ -86,7 +118,7 @@
 
 <div class="container" class:down="{!up}">
     <ul>
-        {#each localList as item (item.item)}
+        {#each localList as item (item.id)}
         <li class="item" on:click="{() => handleClick(item)}"  class:show="{!item.stopShowing}">
             { item.item }
         </li >

@@ -1,7 +1,6 @@
 import { writable, readable } from 'svelte/store';
 import config from './config';
 import { getIfOnServer } from '../_utils/utils';
-import { getIfImgIsTooOld } from './background';
 import { doAdvancedAutoComplete } from './advancedAutoComplete'
 
 export const interfaceValue = writable("");
@@ -51,11 +50,8 @@ export const keys = readable(null, set => {
     }
 });
 
-export const keysInited = new Promise((res, rej) => {
-    res(true);
-});
-
 export const length = writable(0);
+
 
 function getTimeString(date: Date): string {
     let seconds = '';
