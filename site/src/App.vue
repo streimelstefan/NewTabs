@@ -1,47 +1,34 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { onMounted, ref, watch } from 'vue';
+import clock from './components/clock.vue';
+import settings from './components/settings.vue';
+import { useBackgroundStore } from './stores/background';
+
+const background = useBackgroundStore();
+// @ts-ignore
+const mainDiv = ref<HTMLElement>(null);
+
+onMounted(() => {
+    background.loadImage();
+    background.saveImage();
+    // background.getImage();
+});
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+    <div
+        class="h-screen w-screen bg-no-repeat bg-cover"
+        :style="{ 'background-image': background.background }"
+    >
+        <div class="h-screen w-screen bg-black bg-opacity-20 backdrop-blur-md">
+            <div
+                class="h-screen w-screen flex items-center justify-center bg-no-repeat bg-center"
+                ref="mainDiv"
+                :style="{ 'background-image': background.background }"
+            >
+                <!-- <clock></clock> -->
+                <settings></settings>
+            </div>
+        </div>
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
