@@ -3,8 +3,10 @@ import { onMounted, ref, watch } from 'vue';
 import clock from './components/clock.vue';
 import settings from './components/settings.vue';
 import { useBackgroundStore } from './stores/background';
+import { useStateStore, State } from './stores/state';
 
 const background = useBackgroundStore();
+const state = useStateStore();
 // @ts-ignore
 const mainDiv = ref<HTMLElement>(null);
 
@@ -16,19 +18,12 @@ onMounted(() => {
 </script>
 
 <template>
-    <div
-        class="h-screen w-screen bg-no-repeat bg-cover"
-        :style="{ 'background-image': background.background }"
-    >
-        <div class="h-screen w-screen bg-black bg-opacity-20 backdrop-blur-md">
-            <div
-                class="h-screen w-screen flex items-center justify-center bg-no-repeat bg-center"
-                ref="mainDiv"
-                :style="{ 'background-image': background.background }"
-            >
-                <!-- <clock></clock> -->
-                <settings></settings>
-            </div>
+    <div class="h-screen w-screen bg-no-repeat bg-cover" :style="{ 'background-image': background.background }">
+        <div class="h-screen w-screen flex items-center justify-center bg-no-repeat bg-center bg-black bg-opacity-20 backdrop-blur-md" ref="mainDiv"
+            @click.self="state.changeState(State.clock)" :style="{ 'background-image': background.background }">
+            <clock v-if="state.state === State.clock" @click="state.changeState(State.settings)"></clock>
+            <settings v-if="state.state === State.settings"></settings>
         </div>
     </div>
-</template>
+</template >
+                
