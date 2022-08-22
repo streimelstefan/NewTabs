@@ -35,18 +35,16 @@ let interval: number;
 onMounted(() => {
     interval = setInterval(() => {
         time.value = getTimeString();
-    }, 100)
+    }, 100);
 });
 
 onUnmounted(() => {
     clearInterval(interval);
-})
-
-
+});
 </script>
 
 <template>
-    <div class="font-bold text-white text-6xl p-3 px-5 glass-bg">
-        {{time}}
+    <div class="font-bold text-white text-6xl p-3 px-5 glass-bg rounded-2xl">
+        {{ time }}
     </div>
 </template>
