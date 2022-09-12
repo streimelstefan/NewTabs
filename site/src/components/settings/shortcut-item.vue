@@ -2,48 +2,42 @@
 import ntButton from '../el/nt-button.vue';
 import shortcutForm from './shortcut-form.vue';
 import { ref } from 'vue';
-const { name, url, shortcut } = defineProps(['name', 'url', 'shortcut']);
+
+const { shortcut } = defineProps(['shortcut']);
 
 const openEdit = ref(false);
+
+defineEmits(['submit', 'cancel', 'delete']);
+
+function canceled() {
+    openEdit.value = false;
+}
 </script>
 <template>
     <div
-        class="group w-full relative text-base p-3 bg-opacity-70 backdrop-opacity-80 text-white bg-gray-900 rounded-md my-5"
+        class="group w-full relative text-base p-3 bg-opacity-70 backdrop-opacity-80 text-white bg-gray-900 rounded-md my-5 overflow-hidden"
     >
         <button
-            class="absolute right-4 top-4 w-3 h-3 hidden group-hover:inline-block"
+            class="absolute hidden group-hover:inline-block left-[95%] right-0 top-0 bottom-0 bg-sky-300 bg-opacity-10 p-6"
             @click="openEdit = !openEdit"
             v-if="!openEdit"
         >
             <img src="../../assets/icons/edit.svg" alt="Edit shortcut" />
         </button>
-        <button
-            class="absolute right-4 top-4 w-4 h-4 hidden group-hover:inline-block"
-            @click="openEdit = !openEdit"
-            v-if="openEdit"
-        >
-            <img
-                src="../../assets/icons/menu-close.svg"
-                alt="Cancel edit shortcut"
-            />
-        </button>
-        <div>{{ name }}</div>
-        <span>:{{ shortcut }}</span>
+        <div>{{ shortcut.name }}</div>
+        <span>:{{ shortcut.shortcut }}</span>
         ->
-        <span>{{ url }}</span>
+        <span>{{ shortcut.url }}</span>
         <div v-if="openEdit">
             <shortcutForm
-                v-model:url="url"
-                v-model:name="name"
-                v-model:shortcut="shortcut"
+                v-model:url="shortcut.url"
+                v-model:name="shortcut.name"
+                v-model:shortcut="shortcut.shortcut"
+                @submit="$emit('submit', $event)"
+                @cancel="canceled()"
+                @delete="$emit('delete', $event)"
+                addDelete
             ></shortcutForm>
-            <div class="flex items-end w-full">
-                <div class="flex-auto"></div>
-                <span>
-                    <ntButton class="mr-2 ml-auto">cancel</ntButton>
-                    <ntButton primary>save</ntButton>
-                </span>
-            </div>
         </div>
     </div>
 </template>

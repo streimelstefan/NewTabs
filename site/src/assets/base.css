@@ -35,7 +35,7 @@ body {
 }
 
 .scrollbar::-webkit-scrollbar-track {
-    @apply h-full bg-opacity-20 backdrop-opacity-10 bg-white
+    @apply bg-opacity-20 backdrop-opacity-10 bg-white
 }
 
 .scrollbar::-webkit-scrollbar-thumb {

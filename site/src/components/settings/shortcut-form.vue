@@ -1,12 +1,31 @@
 <script lang="ts" setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref } from 'vue';
+import ntButton from '../el/nt-button.vue';
 
-const { name, url, shortcut } = defineProps(['name', 'url', 'shortcut']);
-const emits = defineEmits(['update:name', 'update:url', 'update:shortcut']);
+const { name, url, shortcut, addDelete } = defineProps({
+    addDelete: Boolean,
+    name: String,
+    url: String,
+    shortcut: String,
+});
+const emits = defineEmits([
+    'update:name',
+    'update:url',
+    'update:shortcut',
+    'submit',
+    'cancel',
+    'delete',
+]);
+
+const form = ref(null);
 </script>
 
 <template>
-    <form class="grid grid-cols-2 grid-rows-2 gap-x-10 gap-y-5 mt-5">
+    <form
+        class="grid grid-cols-2 grid-rows-2 gap-x-10 gap-y-5 mt-5"
+        ref="form"
+        @submit.prevent="$emit('submit', $event)"
+    >
         <div class="w-full">
             <label for="shortcutName" class="text-white">Name</label>
             <input
@@ -39,6 +58,23 @@ const emits = defineEmits(['update:name', 'update:url', 'update:shortcut']);
                 :value="url"
                 @input="$emit('update:url', $event.target.value)"
             />
+        </div>
+        <div class="flex items-end w-full col-span-2">
+            <ntButton danger v-if="addDelete" @click="$emit('delete', $event)">
+                <img
+                    class="w-6 float-left"
+                    src="../../assets/icons/delete.svg"
+                    alt="Delete shortcut"
+                />
+                <span class="ml-1"> Delete </span>
+            </ntButton>
+            <div class="flex-auto"></div>
+            <span>
+                <ntButton class="mr-2 ml-auto" @click="$emit('cancel', $event)"
+                    >cancel</ntButton
+                >
+                <ntButton primary submit>save</ntButton>
+            </span>
         </div>
     </form>
 </template>
