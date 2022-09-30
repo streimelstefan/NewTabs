@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import type { l } from 'vitest/dist/index-4a906fa4';
+import { useDbStore } from './db';
 
 export interface ShortCut {
     // name of the shortcut just for organisation sake
@@ -13,11 +14,13 @@ export interface ShortCut {
 export const useShortcutStore = defineStore('shortcut', {
     state: () => ({ shortcuts: [] as ShortCut[] }),
     actions: {
-        saveShortcuts() {
-            localStorage.setItem('shortcuts', JSON.stringify(this.shortcuts));
+        async saveShortcuts() {
+            const db = useDbStore();
+            await db.save('shortcuts', JSON.stringify(this.shortcuts), true);
         },
-        loadShortcuts() {
-            const scString = localStorage.getItem('shortcuts');
+        async loadShortcuts() {
+            const db = useDbStore();
+            const scString = await db.get('shortcuts');
             if (scString) {
                 this.shortcuts = JSON.parse(scString);
             }
