@@ -8,7 +8,7 @@ enum DbProviders {
 export const useDbStore = defineStore('db', {
     state: () => {
         // @ts-ignore
-        if (!chrome) {
+        if (!chrome.storage) {
             return {
                 dbProvider: DbProviders.local,
             };
