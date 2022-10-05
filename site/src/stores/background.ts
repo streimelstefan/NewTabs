@@ -1,8 +1,13 @@
 import { defineStore } from 'pinia';
+import { useDbStore } from './db';
 
 export const useBackgroundStore = defineStore('background', {
     state: () => {
-        return { background: '', fetchingImage: false };
+        return {
+            background: '',
+            fetchingImage: false,
+            inset: 0,
+        };
     },
     // could also be defined as
     // state: () => ({ count: 0 })
@@ -13,10 +18,6 @@ export const useBackgroundStore = defineStore('background', {
 
             db.save('bg-image', this.background);
         },
-        getImage() {
-            if (chrome) {
-                chrome.storage.local.get('Image');
-                return;
         async loadCachedImage(): Promise<boolean> {
             console.log('Loading cached image from database');
             const db = useDbStore();
@@ -50,11 +51,18 @@ export const useBackgroundStore = defineStore('background', {
                     document.documentElement.clientHeight,
                     window.innerHeight || 0
                 );
+                const offsetPer = (100 - this.inset) / 100;
+                const height = Math.trunc(vh * offsetPer);
+                const width = Math.trunc(vw * offsetPer);
                 console.groupCollapsed('Requesting new image');
-                const url = 'https://picsum.photos/' + vw + '/' + vh;
+                const url = 'https://picsum.photos/' + width + '/' + height;
                 console.table({
                     viewPortHeight: vh,
                     viewportWidth: vw,
+                    inset: this.inset,
+                    offsetPercentage: offsetPer,
+                    generatedHeight: height,
+                    generatedWidth: width,
                     requestUrl: url,
                 });
                 console.time('loadImage');
