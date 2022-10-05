@@ -12,7 +12,9 @@ export interface ShortCut {
 }
 
 export const useShortcutStore = defineStore('shortcut', {
-    state: () => ({ shortcuts: [] as ShortCut[] }),
+    state: () => {
+        return { shortcuts: {} as Record<string, ShortCut> };
+    },
     actions: {
         async saveShortcuts() {
             const db = useDbStore();
@@ -25,21 +27,25 @@ export const useShortcutStore = defineStore('shortcut', {
                 this.shortcuts = JSON.parse(scString);
             }
         },
-        addShortcut(sc: ShortCut) {
-            this.shortcuts.push(sc);
-        },
-        removeShortcut(sc: ShortCut) {
-            for (var i = 0; i < this.shortcuts.length; i++) {
-                if (this.shortcuts[i] === sc) {
-                    this.shortcuts.splice(i, 1);
-                    i--;
-                }
+        async addShortcut(sc: ShortCut, saveMode = true) {
+            if (this.shortcuts[sc.shortcut] && saveMode) {
+                return false;
             }
+
+            this.shortcuts[sc.shortcut] = sc;
+            await this.saveShortcuts();
+            return true;
+        },
+        async removeShortcut(sc: ShortCut) {
+            if (!this.shortcuts[sc.shortcut]) {
+                return false;
+            }
+            delete this.shortcuts[sc.shortcut];
+            await this.saveShortcuts();
+            return true;
         },
         getByKey(key: string) {
-            for (const sc of this.shortcuts) {
-                if ((sc.shortcut = key)) return sc;
-            }
+            return this.shortcuts[key];
         },
     },
 });
