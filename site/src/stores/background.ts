@@ -88,7 +88,7 @@ export const useBackgroundStore = defineStore('background', {
                     console.timeEnd('loadImage');
                     console.groupEnd();
                     this.fetchingImage = false;
-                    this.background = `url(${reader.result})`;
+                    this.setBackground(reader.result);
                     res(this.background);
                 };
                 imgxhr.send();
@@ -97,6 +97,31 @@ export const useBackgroundStore = defineStore('background', {
         setBackground(image: string | ArrayBuffer | null) {
             console.log('Setting new Background');
             this.background = `url(${image})`;
+        },
+        async saveSettings() {
+            const db = useDbStore();
+
+            if (isNaN(this.inset)) {
+                this.inset = 0;
+            }
+
+            if (this.inset > 100) {
+                this.inset = 100;
+            }
+
+            if (this.inset < 0) {
+                this.inset = 0;
+            }
+
+            db.save('inset', this.inset.toString(), true);
+        },
+        async loadSettings() {
+            const db = useDbStore();
+            const inset = await db.get('inset', true);
+
+            if (inset) {
+                this.inset = parseInt(inset);
+            }
         },
     },
 });
