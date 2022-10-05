@@ -3,10 +3,13 @@ import { onMounted, ref, watch } from 'vue';
 import clock from './components/clock.vue';
 import settings from './components/settings.vue';
 import { useBackgroundStore } from './stores/background';
+import { useShortcutStore } from './stores/shortcuts';
 import { useStateStore, State } from './stores/state';
 
 const background = useBackgroundStore();
 const state = useStateStore();
+const shortcuts = useShortcutStore();
+shortcuts.loadShortcuts();
 // @ts-ignore
 const mainDiv = ref<HTMLElement>(null);
 
