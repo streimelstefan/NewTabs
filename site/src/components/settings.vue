@@ -3,6 +3,7 @@ import shortcuts from './settings/shortcuts.vue';
 import { State, useStateStore } from '@/stores/state';
 import { ref } from 'vue';
 import Background from './settings/background.vue';
+import SearchEngine from './settings/search-engine.vue';
 let openMenu = ref(false);
 const state = useStateStore();
 enum SettingState {
@@ -137,8 +138,11 @@ function changePage(page: SettingState) {
                 v-if="settingState === SettingState.shortcuts"
             ></shortcuts>
             <Background
-                v-show="settingState === SettingState.background"
+                v-if="settingState === SettingState.background"
             ></Background>
+            <SearchEngine
+                v-if="settingState === SettingState.searchEngine"
+            ></SearchEngine>
         </div>
     </div>
 </template>

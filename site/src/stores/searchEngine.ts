@@ -13,6 +13,11 @@ export const useSearchEngineStore = defineStore('searchEngine', {
             },
         };
     },
+    getters: {
+        engines(): string[] {
+            return Object.keys(this.searchEngines);
+        },
+    },
     actions: {
         getSearchPrefix(of: string | undefined = undefined) {
             if (of === undefined) {
@@ -20,6 +25,10 @@ export const useSearchEngineStore = defineStore('searchEngine', {
             }
             // @ts-ignore
             return this.searchEngines[of];
+        },
+        async setDefault(engine: string) {
+            this.default = engine;
+            await this.save();
         },
         async save() {
             const db = useDbStore();
