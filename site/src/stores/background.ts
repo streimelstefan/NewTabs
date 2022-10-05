@@ -86,5 +86,9 @@ export const useBackgroundStore = defineStore('background', {
                 imgxhr.send();
             });
         },
+        setBackground(image: string | ArrayBuffer | null) {
+            console.log('Setting new Background');
+            this.background = `url(${image})`;
+        },
     },
 });
