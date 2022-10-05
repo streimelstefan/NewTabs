@@ -2,6 +2,7 @@
 import shortcuts from './settings/shortcuts.vue';
 import { State, useStateStore } from '@/stores/state';
 import { ref } from 'vue';
+import Background from './settings/background.vue';
 let openMenu = ref(false);
 const state = useStateStore();
 enum SettingState {
@@ -135,6 +136,9 @@ function changePage(page: SettingState) {
             <shortcuts
                 v-if="settingState === SettingState.shortcuts"
             ></shortcuts>
+            <Background
+                v-if="settingState === SettingState.background"
+            ></Background>
         </div>
     </div>
 </template>
