@@ -126,7 +126,7 @@ const text = computed(() => {
                     class="flex justify-center items-center border-dashed border-white border-2 w-full h-full rounded"
                     :class="classesBorder"
                 >
-                    <span>{{ text }} </span>
+                    <span class="p-14">{{ text }} </span>
                 </div>
                 <input
                     @change="handleFile"
