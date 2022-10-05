@@ -17,7 +17,7 @@ defineEmits(['click']);
             'hover:bg-sky-300 hover:bg-opacity-10': !(primary || danger),
         }"
         @click="$emit('click', $event)"
-        :submit="submit"
+        :type="submit ? 'submit' : 'button'"
     >
         <slot></slot>
     </button>
