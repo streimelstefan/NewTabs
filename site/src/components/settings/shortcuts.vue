@@ -13,6 +13,8 @@ const newSc = reactive({
     url: '',
 } as ShortCut);
 
+console.log(shortcuts.shortcuts);
+
 function addNewShortcut() {
     if (!newSc.name) return;
     if (!newSc.shortcut) return;
@@ -42,6 +44,9 @@ function updateSc(sc: ShortCut) {
 }
 
 const scs = computed(() => {
+    console.log(Object.values(shortcuts.shortcuts));
+    console.log(typeof shortcuts.shortcuts);
+
     return Object.values(shortcuts.shortcuts);
 });
 </script>
@@ -53,7 +58,7 @@ const scs = computed(() => {
             v-model:url="newSc.url"
             v-model:name="newSc.name"
             v-model:shortcut="newSc.shortcut"
-            @submit="addNewShortcut($event)"
+            @submit="addNewShortcut()"
             @cancel="clearNewSc()"
         ></shortcutForm>
         <h1 class="w-full text-center text-lg text-white my-5">My shortcuts</h1>

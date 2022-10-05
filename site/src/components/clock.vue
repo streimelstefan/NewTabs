@@ -30,7 +30,7 @@ function getTimeString() {
     return `${hours}:${minutes}:${seconds}`;
 }
 
-let interval: number;
+let interval: any;
 
 onMounted(() => {
     interval = setInterval(() => {
@@ -44,7 +44,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="font-bold text-white text-6xl p-3 pb-1 px-5 glass-bg rounded-2xl">
+    <div
+        class="font-bold text-white text-6xl p-3 pb-1 px-5 glass-bg rounded-2xl"
+    >
         {{ time }}
     </div>
 </template>

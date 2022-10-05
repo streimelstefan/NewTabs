@@ -17,6 +17,18 @@ const emits = defineEmits([
     'delete',
 ]);
 
+function updateName(event: Event) {
+    emits('update:name', (event.target as HTMLInputElement).value);
+}
+
+function updateUrl(event: Event) {
+    emits('update:url', (event.target as HTMLInputElement).value);
+}
+
+function updateShortcut(event: Event) {
+    emits('update:shortcut', (event.target as HTMLInputElement).value);
+}
+
 const form = ref(null);
 </script>
 
@@ -34,7 +46,7 @@ const form = ref(null);
                 class="nt-input w-full"
                 placeholder="My nice shortcut"
                 :value="name"
-                @input="$emit('update:name', $event.target.value)"
+                @input="updateName"
             />
         </div>
         <div class="w-full">
@@ -45,7 +57,7 @@ const form = ref(null);
                 class="nt-input w-full"
                 placeholder="mns"
                 :value="shortcut"
-                @input="$emit('update:shortcut', $event.target.value)"
+                @input="updateShortcut"
             />
         </div>
         <div class="w-full col-span-2">
@@ -56,7 +68,7 @@ const form = ref(null);
                 class="nt-input w-full"
                 placeholder="https://example.com"
                 :value="url"
-                @input="$emit('update:url', $event.target.value)"
+                @input="updateUrl"
             />
         </div>
         <div class="flex items-end w-full col-span-2">

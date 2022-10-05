@@ -22,9 +22,14 @@ export const useShortcutStore = defineStore('shortcut', {
         },
         async loadShortcuts() {
             const db = useDbStore();
-            const scString = await db.get('shortcuts');
-            if (scString) {
+            let scString = await db.get('shortcuts', true);
+            console.log(`Got shorcuts from database: ${scString}`);
+            if (scString !== null) {
+                if (scString.startsWith('"')) {
+                    scString = JSON.parse(scString) as string;
+                }
                 this.shortcuts = JSON.parse(scString);
+                console.log(this.shortcuts);
             }
         },
         async addShortcut(sc: ShortCut, saveMode = true) {
@@ -33,8 +38,16 @@ export const useShortcutStore = defineStore('shortcut', {
             }
 
             this.shortcuts[sc.shortcut] = sc;
+            await this.removeDuplicates();
             await this.saveShortcuts();
             return true;
+        },
+        async removeDuplicates() {
+            Object.keys(this.shortcuts).forEach((key) => {
+                if (this.shortcuts[key].shortcut !== key) {
+                    delete this.shortcuts[key];
+                }
+            });
         },
         async removeShortcut(sc: ShortCut) {
             if (!this.shortcuts[sc.shortcut]) {

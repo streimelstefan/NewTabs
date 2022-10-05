@@ -17,10 +17,8 @@ const urlChecker = ref<HTMLInputElement>(null);
 
 async function search() {
     // if the query is meant for a shortcut
-    if (query.value.startsWith(':')) {
-        const scKey = query.value.slice(1);
-
-        const sc = shortcuts.getByKey(scKey);
+    if (shortcuts.getByKey(query.value)) {
+        const sc = shortcuts.getByKey(query.value);
 
         console.log(sc);
 
@@ -37,6 +35,7 @@ async function search() {
 }
 
 function goTo(url: string) {
+    console.log(`Going to ${url}`);
     window.location.href = url;
 }
 
@@ -48,6 +47,10 @@ function isUrl(query: string) {
     console.log(urlChecker.value.value);
     console.log(urlChecker.value.validity.valid);
     return urlChecker.value.validity.valid;
+}
+
+function setQuery(event: Event) {
+    query.value = (event.target as HTMLInputElement).value;
 }
 
 watch(query, (value) => {
@@ -68,7 +71,7 @@ onMounted(() => {
             autofocus
             name="search"
             ref="searchField"
-            @input="(event) => (query = event.target.value)"
+            @input="setQuery"
             type="search"
         />
     </form>

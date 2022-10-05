@@ -8,7 +8,7 @@ const searchEngine = useSearchEngineStore();
     <div class="h-full">
         <h1 class="w-full text-center text-lg text-white">Search Engine</h1>
 
-        <ol class="grid grid-cols-2 gap-10">
+        <ol class="grid lg:grid-cols-2 gap-10">
             <li
                 v-for="engine in searchEngine.engines"
                 :class="

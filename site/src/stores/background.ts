@@ -22,11 +22,15 @@ export const useBackgroundStore = defineStore('background', {
             console.log('Loading cached image from database');
             const db = useDbStore();
 
-            const cachedImage = await db.get('bg-image');
+            let cachedImage = await db.get('bg-image');
             // if there is no cached image return false and do not
             // save the image in the background variable
             if (!cachedImage) {
                 return false;
+            }
+
+            if (cachedImage.startsWith('"')) {
+                cachedImage = JSON.parse(cachedImage) as string;
             }
 
             this.background = cachedImage;
@@ -118,7 +122,7 @@ export const useBackgroundStore = defineStore('background', {
         async loadSettings() {
             const db = useDbStore();
             const inset = await db.get('inset', true);
-
+            console.log(inset);
             if (inset) {
                 this.inset = parseInt(inset);
             }

@@ -18,16 +18,15 @@ shortcuts.loadShortcuts();
 const mainDiv = ref<HTMLElement>(null);
 
 onMounted(async () => {
+    document.addEventListener('keydown', changeToSearch);
+
     // load the image from the cache if there is no image in the cache
     // load a new one
     await background.loadSettings();
     if (!(await background.loadCachedImage())) {
-        background.loadImage();
+        await background.loadImage();
+        await background.saveImage();
     }
-    background.saveImage();
-    // background.getImage();
-
-    document.addEventListener('keydown', changeToSearch);
 });
 
 onUnmounted(async () => {

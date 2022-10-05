@@ -39,7 +39,7 @@ function openEditor() {
             <img src="../../assets/icons/edit.svg" alt="Edit shortcut" />
         </button>
         <div>{{ shortcut.name }}</div>
-        <span>:{{ shortcut.shortcut }}</span>
+        <span>{{ shortcut.shortcut }}</span>
         ->
         <span>{{ shortcut.url }}</span>
         <div v-if="openEdit">

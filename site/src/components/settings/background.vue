@@ -30,14 +30,14 @@ async function getNewImage() {
                 <div
                     class="2xl:w-2/3 w-full bg-opacity-70 backdrop-opacity-80 text-white bg-gray-900 rounded-md p-3"
                 >
-                    <span class="text-gray-200"
+                    <span class="text-gray-200 text-lg"
                         >Get a random image from a 3rd party image provider.
                         Provide an inset to shrink the image size by this
                         percentige on all sides</span
                     >
                     <br />
                     <span class="flex items-center w-full">
-                        <label for="shortcutName" class="text-white"
+                        <label for="shortcutName" class="text-white text-lg"
                             >Inset in %:
                         </label>
                         <div class="flex-grow"></div>

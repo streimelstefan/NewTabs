@@ -12,6 +12,7 @@ const enum State {
 }
 
 const state = ref<State>(State.default);
+//@ts-ignore
 const input = ref<HTMLInputElement>(null);
 
 async function handleFile(event: DragEvent) {
@@ -31,6 +32,7 @@ async function handleFile(event: DragEvent) {
 
     // called from drag area
     if (event.dataTransfer) {
+        // @ts-ignore
         const fileArr = [...event.dataTransfer.items];
         if (fileArr.length > 1) return;
 
@@ -57,6 +59,7 @@ async function handleFile(event: DragEvent) {
 async function checkFiles(event: DragEvent) {
     event.preventDefault();
     if (event.dataTransfer) {
+        //@ts-ignore
         const fileArr = [...event.dataTransfer.items];
         if (fileArr.length > 1) return;
 
@@ -114,7 +117,9 @@ const text = computed(() => {
             @click.self.prevent.stop="input.click()"
         ></div>
         <div class="h-full w-full flex flex-col">
-            <label for="set-background" class="text-white text-center w-full"
+            <label
+                for="set-background"
+                class="text-white text-center w-full text-lg"
                 >Set your custom background</label
             >
             <form
@@ -126,10 +131,10 @@ const text = computed(() => {
                     class="flex justify-center items-center border-dashed border-white border-2 w-full h-full rounded"
                     :class="classesBorder"
                 >
-                    <span class="p-14">{{ text }} </span>
+                    <span class="p-14 text-lg">{{ text }} </span>
                 </div>
                 <input
-                    @change="handleFile"
+                    @change="handleFile($event as DragEvent)"
                     ref="input"
                     type="file"
                     name="set-background"

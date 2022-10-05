@@ -9,11 +9,13 @@ export const useDbStore = defineStore('db', {
     state: () => {
         // @ts-ignore
         if (!chrome.storage) {
+            console.log('Db provider set to localhost');
             return {
                 dbProvider: DbProviders.local,
             };
         }
 
+        console.log('Db provider set to chrome storage');
         return {
             dbProvider: DbProviders.chrome,
         };
@@ -30,13 +32,14 @@ export const useDbStore = defineStore('db', {
                     dbObj[key] = value;
                     if (sync) {
                         // @ts-ignore
-                        return chrome.storage.sync.set(dbObj);
+                        return res(chrome.storage.sync.set(dbObj));
                     }
                     // @ts-ignore
-                    return chrome.storage.local.set(dbObj);
+                    return res(chrome.storage.local.set(dbObj));
                 }
 
                 localStorage.setItem(key, value);
+                res(undefined);
             });
         },
         get(key: string, sync: boolean = false): Promise<string | null> {
@@ -46,15 +49,23 @@ export const useDbStore = defineStore('db', {
                         // @ts-ignore
                         return chrome.storage.sync.get(
                             [key],
-                            (data: string) => {
-                                res(data);
+                            (data: object) => {
+                                if (Object.keys(data).length === 0) {
+                                    res(null);
+                                }
+                                // @ts-ignore
+                                res(JSON.stringify(data[key]));
                             }
                         );
                     }
 
                     // @ts-ignore
-                    return chrome.storage.sync.get([key], (data: string) => {
-                        res(data);
+                    return chrome.storage.local.get([key], (data: string) => {
+                        if (Object.keys(data).length === 0) {
+                            res(null);
+                        }
+                        // @ts-ignore
+                        res(JSON.stringify(data[key]));
                     });
                 }
 
