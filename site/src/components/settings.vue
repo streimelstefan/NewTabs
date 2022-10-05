@@ -137,7 +137,7 @@ function changePage(page: SettingState) {
                 v-if="settingState === SettingState.shortcuts"
             ></shortcuts>
             <Background
-                v-if="settingState === SettingState.background"
+                v-show="settingState === SettingState.background"
             ></Background>
         </div>
     </div>
