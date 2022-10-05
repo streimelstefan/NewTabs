@@ -4,6 +4,7 @@ import shortcutForm from './shortcut-form.vue';
 
 import { useShortcutStore, type ShortCut } from '@/stores/shortcuts';
 import { reactive } from 'vue';
+import { computed } from '@vue/reactivity';
 
 const shortcuts = useShortcutStore();
 const newSc = reactive({
@@ -12,17 +13,37 @@ const newSc = reactive({
     url: '',
 } as ShortCut);
 
-function addNewShortcut(shortcut: ShortCut) {
-    console.log(newSc);
+function addNewShortcut() {
+    if (!newSc.name) return;
+    if (!newSc.shortcut) return;
+    if (!newSc.url) return;
+
     shortcuts.addShortcut({
         name: newSc.name,
         shortcut: newSc.shortcut,
         url: newSc.url,
     });
+
+    clearNewSc();
+}
+
+function clearNewSc() {
     newSc.name = '';
     newSc.shortcut = '';
     newSc.url = '';
 }
+
+function deleteSc(sc: ShortCut) {
+    shortcuts.removeShortcut(sc);
+}
+
+function updateSc(sc: ShortCut) {
+    shortcuts.addShortcut(sc, false);
+}
+
+const scs = computed(() => {
+    return Object.values(shortcuts.shortcuts);
+});
 </script>
 
 <template>
@@ -33,11 +54,14 @@ function addNewShortcut(shortcut: ShortCut) {
             v-model:name="newSc.name"
             v-model:shortcut="newSc.shortcut"
             @submit="addNewShortcut($event)"
+            @cancel="clearNewSc()"
         ></shortcutForm>
         <h1 class="w-full text-center text-lg text-white my-5">My shortcuts</h1>
         <shortcut-item
-            v-for="sc in shortcuts.shortcuts"
+            v-for="sc in scs"
             :shortcut="sc"
+            @delete="deleteSc(sc)"
+            @update="updateSc(sc)"
         ></shortcut-item>
     </div>
 </template>
