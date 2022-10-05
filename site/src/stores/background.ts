@@ -8,20 +8,28 @@ export const useBackgroundStore = defineStore('background', {
     // state: () => ({ count: 0 })
     actions: {
         saveImage() {
-            if (chrome.storage) {
-                chrome.storage.local.set({ Image: this.background });
-                return;
-            }
+            console.log('Saving image to database');
+            const db = useDbStore();
 
-            localStorage.setItem('bg-image', this.background);
+            db.save('bg-image', this.background);
         },
         getImage() {
             if (chrome) {
                 chrome.storage.local.get('Image');
                 return;
+        async loadCachedImage(): Promise<boolean> {
+            console.log('Loading cached image from database');
+            const db = useDbStore();
+
+            const cachedImage = await db.get('bg-image');
+            // if there is no cached image return false and do not
+            // save the image in the background variable
+            if (!cachedImage) {
+                return false;
             }
 
-            localStorage.getItem('bg-image');
+            this.background = cachedImage;
+            return true;
         },
         async loadImage() {
             return new Promise((res, rej) => {
