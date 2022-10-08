@@ -14,10 +14,14 @@ const shortcuts = useShortcutStore();
 const searchEngine = useSearchEngineStore();
 searchEngine.load();
 shortcuts.loadShortcuts();
+
 // @ts-ignore
 const mainDiv = ref<HTMLElement>(null);
 
 onMounted(async () => {
+    if (await shortcuts.checkForOldShortcuts()) {
+        shortcuts.importOldShortcuts();
+    }
     document.addEventListener('keydown', changeToSearch);
 
     // load the image from the cache if there is no image in the cache

@@ -54,7 +54,7 @@ export const useDbStore = defineStore('db', {
                                     res(null);
                                 }
                                 // @ts-ignore
-                                res(JSON.stringify(data[key]));
+                                res(data[key]);
                             }
                         );
                     }
@@ -65,7 +65,7 @@ export const useDbStore = defineStore('db', {
                             res(null);
                         }
                         // @ts-ignore
-                        res(JSON.stringify(data[key]));
+                        res(data[key]);
                     });
                 }
 

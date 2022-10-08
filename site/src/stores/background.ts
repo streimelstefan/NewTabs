@@ -29,10 +29,6 @@ export const useBackgroundStore = defineStore('background', {
                 return false;
             }
 
-            if (cachedImage.startsWith('"')) {
-                cachedImage = JSON.parse(cachedImage) as string;
-            }
-
             this.background = cachedImage;
             return true;
         },
