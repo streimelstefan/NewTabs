@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'CourierPrime';
+  src: local('CourierPrime'),
+    url(./CourierPrime-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'CourierPrimeBold';
+  src: local('CourierPrimeBold'),
+    url(./CourierPrime-Bold.ttf) format('truetype');
+}
+
+body {
+    font-family: "CourierPrime";
+}
+
+.glass-bg {
+    @apply bg-sky-300 bg-opacity-10 backdrop-opacity-80 backdrop-blur-2xl;
+}
+
+.nt-input {
+    @apply text-base p-1 text-black bg-white rounded-md focus:border-black border border-transparent box-border outline-none
+}
+
+@layer base {
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="search"]::-webkit-search-decoration,
+    input[type="search"]::-webkit-search-cancel-button,
+    input[type="search"]::-webkit-search-results-button,
+    input[type="search"]::-webkit-search-results-decoration {
+        -webkit-appearance:none;
+    }
+}

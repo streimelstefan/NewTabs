@@ -131,13 +131,13 @@ onUnmounted(() => {
 <template>
     <form @submit.prevent="search()" class="relative">
         <input
-            class="font-bold text-black text-6xl p-3 pb-1 px-5 bg-transparent"
+            class="font-semibold text-black text-6xl p-3 pb-1 px-5 bg-transparent"
             readonly
             id="searchHint"
             :value="searchHint"
         />
         <input
-            class="absolute top-0 left-0 font-bold text-white text-6xl p-3 pb-1 px-5 glass-bg rounded-2xl focus:border-white border border-transparent box-border outline-none"
+            class="absolute top-0 left-0 font-semibold text-white text-6xl p-3 pb-1 px-5 glass-bg rounded-2xl focus:border-white border border-transparent box-border outline-none"
             autofocus
             name="search"
             ref="searchField"
