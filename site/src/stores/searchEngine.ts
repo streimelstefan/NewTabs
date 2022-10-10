@@ -10,7 +10,7 @@ export const useSearchEngineStore = defineStore('searchEngine', {
                 yahoo: 'https://search.yahoo.com/search?p=',
                 bing: 'https://www.bing.com/search?q=',
                 duckDuckGo: 'https://duckduckgo.com/?q=',
-            },
+            } as Record<string, string>,
         };
     },
     getters: {
@@ -23,10 +23,20 @@ export const useSearchEngineStore = defineStore('searchEngine', {
             if (of === undefined) {
                 of = this.default;
             }
+
+            // @ts-ignore
+            if (!this.searchEngines[of]) {
+                of = this.default;
+            }
+
             // @ts-ignore
             return this.searchEngines[of];
         },
         async setDefault(engine: string) {
+            if (!this.searchEngines[engine]) {
+                console.log(this.searchEngines[engine]);
+                return console.error(`Search engine ${engine} does not exist!`);
+            }
             this.default = engine;
             await this.save();
         },
@@ -39,8 +49,9 @@ export const useSearchEngineStore = defineStore('searchEngine', {
             const db = useDbStore();
 
             const defaultSe = await db.get('searchEngine', true);
+            console.log(defaultSe);
             if (defaultSe) {
-                this.default = defaultSe;
+                await this.setDefault(defaultSe);
             }
         },
     },
