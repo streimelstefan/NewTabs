@@ -3,7 +3,7 @@ import NtButton from "./components/el/nt-button.vue";
 import { useShortcutStore } from "./stores/shortcuts";
 import { ref, onMounted } from "vue";
 import { checkCompatEnabled } from "@vue/compiler-core";
-import { useBackgroundStore } from "../../site/src/stores/background";
+import { useBackgroundStore } from "./stores/background";
 
 const shortcuts = useShortcutStore();
 const background = useBackgroundStore();
