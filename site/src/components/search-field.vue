@@ -25,6 +25,11 @@ async function search() {
         return goTo(sc.url);
     }
 
+    const isLocal = isLocalhost(query.value);
+    if (isLocal.isLocal) {
+        return goTo(isLocal.newUrl);
+    }
+
     // if the string is a url set the query to the href of the site
     if (isUrl(query.value)) {
         return goTo(query.value);
@@ -47,6 +52,21 @@ function isUrl(query: string) {
     console.log(urlChecker.value.value);
     console.log(urlChecker.value.validity.valid);
     return urlChecker.value.validity.valid;
+}
+
+function isLocalhost(query: string) {
+    const returnObj = {
+        isLocal: false,
+        newUrl: query,
+    };
+    if (/^(https?:\/\/)?localhost.*/.test(query)) {
+        returnObj.isLocal = true;
+        if (!query.startsWith('http')) {
+            returnObj.newUrl = `http://${query}`;
+        }
+    }
+
+    return returnObj;
 }
 
 function setQuery(event: Event) {
