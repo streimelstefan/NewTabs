@@ -47,7 +47,22 @@ const scs = computed(() => {
     console.log(Object.values(shortcuts.shortcuts));
     console.log(typeof shortcuts.shortcuts);
 
-    return Object.values(shortcuts.shortcuts);
+    const scs = Object.values(shortcuts.shortcuts);
+
+    scs.sort((a, b) => {
+        let fa = a.name.toLowerCase(),
+            fb = b.name.toLowerCase();
+
+        if (fa < fb) {
+            return -1;
+        }
+        if (fa > fb) {
+            return 1;
+        }
+        return 0;
+    });
+
+    return scs;
 });
 </script>
 
