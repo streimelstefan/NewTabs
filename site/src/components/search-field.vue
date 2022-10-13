@@ -30,8 +30,12 @@ async function search() {
         return goTo(isLocal.newUrl);
     }
 
+    const edgeCase = checkEdgeCases(query.value);
     // if the string is a url set the query to the href of the site
-    if (isUrl(query.value)) {
+    if (
+        (isUrl(query.value) && !edgeCase.hasEdgeCase) || // query is a url and there is no edgecase
+        (edgeCase.hasEdgeCase && edgeCase.operation === 'website') // if there is an edgecase it has to be of type website
+    ) {
         return goTo(query.value);
     }
 
@@ -49,8 +53,7 @@ function isUrl(query: string) {
     urlChecker.value.value = query;
 
     urlChecker.value.checkValidity();
-    console.log(urlChecker.value.value);
-    console.log(urlChecker.value.validity.valid);
+
     return urlChecker.value.validity.valid;
 }
 
@@ -107,6 +110,29 @@ function globalKeyListener(event: KeyboardEvent) {
     if (event.code === 'Enter') {
         search();
     }
+}
+
+function checkEdgeCases(query: string): {
+    hasEdgeCase: boolean;
+    operation?: 'shortcut' | 'search' | 'website';
+} {
+    const tests: {
+        regex: RegExp;
+        operation: 'shortcut' | 'search' | 'website';
+    }[] = [{ regex: /^\w*:/, operation: 'search' }];
+
+    for (const test of tests) {
+        if (test.regex.test(query)) {
+            return {
+                hasEdgeCase: true,
+                operation: test.operation,
+            };
+        }
+    }
+
+    return {
+        hasEdgeCase: false,
+    };
 }
 
 const shortcutUrl = computed(() => {
