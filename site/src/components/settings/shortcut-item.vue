@@ -32,16 +32,30 @@ function openEditor() {
         class="group w-full relative text-base p-3 bg-opacity-70 backdrop-opacity-80 text-white bg-gray-900 rounded-md my-5 overflow-hidden"
     >
         <button
-            class="absolute hidden group-hover:inline-block left-[95%] right-0 top-0 bottom-0 bg-sky-300 bg-opacity-10 p-6"
+            class="absolute hidden group-hover:flex justify-center items-center left-[95%] right-0 top-0 bottom-0 bg-sky-300 bg-opacity-10"
             @click="openEditor()"
             v-if="!openEdit"
         >
-            <img src="../../assets/icons/edit.svg" alt="Edit shortcut" />
+            <img
+                class="w-4 h-4"
+                src="../../assets/icons/edit.svg"
+                alt="Edit shortcut"
+            />
         </button>
-        <div>{{ shortcut.name }}</div>
-        <span>{{ shortcut.shortcut }}</span>
-        ->
-        <span>{{ shortcut.url }}</span>
+        <div
+            class="w-[95%]"
+            :class="{ 'truncate whitespace-nowrap': !openEdit }"
+        >
+            {{ shortcut.name }}
+        </div>
+        <div
+            class="w-[95%]"
+            :class="{ 'truncate whitespace-nowrap': !openEdit }"
+        >
+            {{ shortcut.shortcut }}
+            ->
+            {{ shortcut.url }}
+        </div>
         <div v-if="openEdit">
             <shortcutForm
                 v-model:url="shortcut.url"
