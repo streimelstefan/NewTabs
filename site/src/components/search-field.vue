@@ -165,9 +165,10 @@ onUnmounted(() => {
             type="search"
             @keydown="checkHintAction"
         />
-        <span class="absolute text-white text-sm -bottom-5 left-7">{{
-            shortcutUrl
-        }}</span>
+        <span
+            class="absolute text-white text-sm -bottom-6 left-7 w-[calc(100%-1.75rem)] truncate"
+            >{{ shortcutUrl }}</span
+        >
     </form>
 
     <input
