@@ -19,52 +19,55 @@ shortcuts.loadShortcuts();
 const mainDiv = ref<HTMLElement>(null);
 
 onMounted(async () => {
-    if (await shortcuts.checkForOldShortcuts()) {
-        shortcuts.importOldShortcuts();
-    }
-    document.addEventListener('keydown', changeToSearch);
+  if (await shortcuts.checkForOldShortcuts()) {
+    shortcuts.importOldShortcuts();
+  }
+  document.addEventListener('keydown', changeToSearch);
 
-    // load the image from the cache if there is no image in the cache
-    // load a new one
-    await background.loadSettings();
-    if (!(await background.loadCachedImage())) {
-        await background.loadImage();
-        await background.saveImage();
-    }
+  // load the image from the cache if there is no image in the cache
+  // load a new one
+  await background.loadSettings();
+  if (!(await background.loadCachedImage())) {
+    await background.loadImage();
+    await background.saveImage();
+  }
 });
 
 onUnmounted(async () => {
-    document.removeEventListener('keydown', changeToSearch);
+  document.removeEventListener('keydown', changeToSearch);
 });
 
-function changeToSearch() {
-    if (state.state === State.clock) {
-        state.state = State.search;
-    }
+function changeToSearch(event: KeyboardEvent) {
+  // if the key is a white space character or a special character like shift delete.
+  if (event.key.length !== 1) return;
+
+  if (state.state === State.clock) {
+    state.state = State.search;
+  }
 }
 </script>
 
 <template>
+  <div
+    class="h-screen w-screen bg-no-repeat bg-cover"
+    :style="{ 'background-image': background.background }"
+  >
     <div
-        class="h-screen w-screen bg-no-repeat bg-cover"
-        :style="{ 'background-image': background.background }"
+      class="h-screen w-screen flex items-center justify-center bg-no-repeat bg-center bg-black bg-opacity-20 backdrop-blur-md"
+      ref="mainDiv"
+      @click.self="
+        state.state === State.settings
+          ? state.changeState(State.clock)
+          : undefined
+      "
+      :style="{ 'background-image': background.background }"
     >
-        <div
-            class="h-screen w-screen flex items-center justify-center bg-no-repeat bg-center bg-black bg-opacity-20 backdrop-blur-md"
-            ref="mainDiv"
-            @click.self="
-                state.state === State.settings
-                    ? state.changeState(State.clock)
-                    : undefined
-            "
-            :style="{ 'background-image': background.background }"
-        >
-            <clock
-                v-if="state.state === State.clock"
-                @click="state.changeState(State.settings)"
-            ></clock>
-            <settings v-if="state.state === State.settings"></settings>
-            <SearchField v-if="state.state === State.search"></SearchField>
-        </div>
+      <clock
+        v-if="state.state === State.clock"
+        @click="state.changeState(State.settings)"
+      ></clock>
+      <settings v-if="state.state === State.settings"></settings>
+      <SearchField v-if="state.state === State.search"></SearchField>
     </div>
+  </div>
 </template>

@@ -66,26 +66,26 @@ function globalKeyListener(event: KeyboardEvent) {
 }
 
 function checkEdgeCases(query: string): {
-    hasEdgeCase: boolean;
-    operation?: 'shortcut' | 'search' | 'website';
+  hasEdgeCase: boolean;
+  operation?: 'shortcut' | 'search' | 'website';
 } {
-    const tests: {
-        regex: RegExp;
-        operation: 'shortcut' | 'search' | 'website';
-    }[] = [{ regex: /^\w*:/, operation: 'search' }];
+  const tests: {
+    regex: RegExp;
+    operation: 'shortcut' | 'search' | 'website';
+  }[] = [{ regex: /^\w*:/, operation: 'search' }];
 
-    for (const test of tests) {
-        if (test.regex.test(query)) {
-            return {
-                hasEdgeCase: true,
-                operation: test.operation,
-            };
-        }
+  for (const test of tests) {
+    if (test.regex.test(query)) {
+      return {
+        hasEdgeCase: true,
+        operation: test.operation,
+      };
     }
+  }
 
-    return {
-        hasEdgeCase: false,
-    };
+  return {
+    hasEdgeCase: false,
+  };
 }
 
 const shortcutUrl = computed(() => {
@@ -104,7 +104,7 @@ const searchHint = computed(() => {
       hintIgnore.value
     );
 
-    maxHintIgnore.value = hint.ignored;
+    maxHintIgnore.value = hint.maxIgnorable;
 
     return hint.hint;
   }

@@ -171,6 +171,10 @@ export const useSearchStore = defineStore('search', {
 
       const shortcut = shortcutStore.getByKey(shortcutKey);
 
+      if (!shortcut) {
+        return;
+      }
+
       window.location.href = shortcut.url;
     },
   },
