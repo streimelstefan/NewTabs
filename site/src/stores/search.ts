@@ -7,6 +7,8 @@ import { defineStore } from 'pinia';
 import { useSearchEngineStore } from './searchEngine';
 import { useShortcutStore } from './shortcuts';
 
+import { parseURL, type URLRecord } from 'whatwg-url';
+
 /**
  * Represents the actions that can be taken for a search query
  *
@@ -89,36 +91,39 @@ export const useSearchStore = defineStore('search', {
      * @returns true if the query is a url
      */
     _isUrl(query: string): UrlParseMode {
-      let url: URL | undefined;
+      let url: URLRecord | null = null;
       let parseMode = UrlParseMode.noUrl;
 
       try {
-        url = new URL(query);
+        url = parseURL(query);
         parseMode = UrlParseMode.url;
       } catch (error) {}
 
       // add protocol to detect sites that dont have their protocol if first parse failed
-      if (!url) {
+      if (url === null) {
         try {
-          url = new URL('http://' + query);
+          url = parseURL('http://' + query);
           parseMode = UrlParseMode.urlWithoutProtocol;
         } catch (error) {}
       }
 
       // if the url is undefined the parse failed!
       if (!url) return UrlParseMode.noUrl;
-
+      console.log(url);
       // "localhost" is a special case and needs to be true as well
-      if (url.hostname === 'localhost') return parseMode;
+      if (url.host === 'localhost') return parseMode;
 
       // if the port is specified on localhost, localhost will be detected as the protocol
       // so we need to check that too...
-      if (url.protocol === 'localhost:') return UrlParseMode.urlWithoutProtocol;
+      if (url.scheme === 'localhost') return UrlParseMode.urlWithoutProtocol;
+
+      if (url.host === null) return UrlParseMode.noUrl;
 
       // check wheter the host has at least two parts.
       // if we would not check this stuff like: "error: this is an error"
       // would be valid
-      if (url.hostname.split('.').length !== 2) return UrlParseMode.noUrl;
+      if (typeof url.host === 'string' && url.host.split('.').length !== 2)
+        return UrlParseMode.noUrl;
 
       return parseMode;
     },
@@ -128,13 +133,13 @@ export const useSearchStore = defineStore('search', {
      *
      * ! After this function is called the tab will switch sides so no more functions can be called afterwards!
      *
-     * Depending on the query different actions will occure.
+     * Depending on the query different actions will occur.
      * There are currently three different actions that can be called:
      *
      *  - If the query is a valid url: `SearchAction.site`
      *    - The query should be just opened in a new tab with the query as the url.
      *  - If the query is a shortcut key: `SearchAction.shortcut`
-     *    - The query represents a shortcut and the url that should be opend can be gotten from the `shortcutsStore`
+     *    - The query represents a shortcut and the url that should be opened can be gotten from the `shortcutsStore`
      *  - If the sites does not match anything above then the query is: `SearchAction.search`
      *    - The query should be appended to the search provided that should be gotten from the `searchEngineStore`
      * @param query The query that should be searched for.
@@ -145,7 +150,6 @@ export const useSearchStore = defineStore('search', {
      */
     search(query: string): void {
       const action = this._getQueryAction(query);
-
       switch (action) {
         case SearchAction.search:
           return this._searchFor(query);
