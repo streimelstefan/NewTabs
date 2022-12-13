@@ -13,12 +13,14 @@
   },
   "dependencies": {
     "pinia": "^2.0.17",
-    "vue": "^3.2.37"
+    "vue": "^3.2.37",
+    "whatwg-url": "^11.0.0"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.202",
     "@types/jsdom": "^20.0.0",
     "@types/node": "^16.11.47",
+    "@types/whatwg-url": "^11.0.0",
     "@vitejs/plugin-vue": "^3.0.1",
     "@vue/test-utils": "^2.0.2",
     "@vue/tsconfig": "^0.1.3",
