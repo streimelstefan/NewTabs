@@ -116,3 +116,6 @@ dist
 .yarn/build-state.yml
 .pnp.*
 site/out
+chrome_extension/assets
+chrome_extension/popup.html
+chrome_extension/site/index.html
