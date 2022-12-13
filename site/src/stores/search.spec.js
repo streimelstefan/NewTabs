@@ -192,5 +192,33 @@ describe('searchStore', () => {
       ).toBeTruthy();
       expect(window.location.href.includes('Error?test')).toBeTruthy();
     });
+
+    test('"search for .error" should be searched with the default search engine', () => {
+      const search = useSearchStore();
+      const searchEngine = useSearchEngineStore();
+
+      search.search('search for .error');
+
+      expect(
+        window.location.href.includes(searchEngine.getSearchPrefix())
+      ).toBeTruthy();
+      expect(
+        window.location.href.includes('search%20for%20.error')
+      ).toBeTruthy();
+    });
+
+    test('" test.txt" should be searched with the default search engine', () => {
+      const search = useSearchStore();
+      const searchEngine = useSearchEngineStore();
+
+      search.search(' test.txt');
+
+      console.log(window.location.href);
+      console.log(searchEngine.getSearchPrefix());
+      expect(
+        window.location.href.includes(searchEngine.getSearchPrefix())
+      ).toBeTruthy();
+      expect(window.location.href.includes('%20test.txt')).toBeTruthy();
+    });
   });
 });
