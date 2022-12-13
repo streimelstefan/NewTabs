@@ -3,8 +3,8 @@
  * @copyright Streimel Stefan under Apache License 2.0
  * @author Streimel Stefan
  */
-import { defineStore } from 'pinia';
-import { useDbStore } from './db';
+import { defineStore } from "pinia";
+import { useDbStore } from "./db";
 
 /**
  * Holds all the data necessary to operate with shortcuts.
@@ -71,7 +71,7 @@ export interface BestMatchingShortCut {
  * @since 4.3.0
  * @constant
  */
-export const useShortcutStore = defineStore('shortcut', {
+export const useShortcutStore = defineStore("shortcut", {
   state: () => {
     return { shortcuts: {} as Record<string, ShortCut> };
   },
@@ -84,7 +84,7 @@ export const useShortcutStore = defineStore('shortcut', {
      */
     async saveShortcuts(): Promise<void> {
       const db = useDbStore();
-      await db.save('shortcuts', JSON.stringify(this.shortcuts), true);
+      await db.save("shortcuts", JSON.stringify(this.shortcuts), true);
     },
     /**
      * Loads all shortcuts form the db into the store.
@@ -96,7 +96,7 @@ export const useShortcutStore = defineStore('shortcut', {
      */
     async loadShortcuts(): Promise<void> {
       const db = useDbStore();
-      let scString = await db.get('shortcuts', true);
+      let scString = await db.get("shortcuts", true);
       console.log(`Got shorcuts from database: ${scString}`);
       if (scString !== null) {
         this.shortcuts = JSON.parse(scString);
@@ -204,8 +204,8 @@ export const useShortcutStore = defineStore('shortcut', {
       });
 
       let maxIgnorable = 0;
-      let lastMatch = '';
-      let match = '';
+      let lastMatch = "";
+      let match = "";
       for (const sc of scs) {
         if (sc.startsWith(key)) {
           if (maxIgnorable === ignoreFirst) {
@@ -236,7 +236,7 @@ export const useShortcutStore = defineStore('shortcut', {
     async checkForOldShortcuts(): Promise<boolean> {
       const db = useDbStore();
 
-      const sc = await db.get('sc', true);
+      const sc = await db.get("sc", true);
 
       return !!sc;
     },
@@ -246,14 +246,14 @@ export const useShortcutStore = defineStore('shortcut', {
      * @returns The shortcut with the searched for url or undefined if not shortcut was found.
      */
     async getScWithUrl(url: string): Promise<ShortCut | undefined> {
-      for (const sc of this.shortcuts) {
-        if (sc.url === url) {
-          return sc;
+      for (const sc of Object.keys(this.shortcuts)) {
+        if (this.shortcuts[sc].url === url) {
+          return this.shortcuts[sc];
         }
       }
 
       return undefined;
-    }
+    },
     /**
      * Imports old versions of shortcuts.
      * @author Streimel Stefan
@@ -263,7 +263,7 @@ export const useShortcutStore = defineStore('shortcut', {
     async importOldShortcuts(): Promise<void> {
       const db = useDbStore();
 
-      const sc = (await db.get('sc', true)) as unknown as {
+      const sc = (await db.get("sc", true)) as unknown as {
         category: string;
         color: string;
         key: string;
@@ -273,7 +273,7 @@ export const useShortcutStore = defineStore('shortcut', {
       }[];
 
       if (sc) {
-        console.log('Found a old shortcut config. Converting to new one');
+        console.log("Found a old shortcut config. Converting to new one");
         console.log(sc);
 
         sc.forEach(async (shortcut) => {
