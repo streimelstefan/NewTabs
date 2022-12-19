@@ -30,6 +30,10 @@ export interface ShortCut {
    * The key of the shortcut. If the user types in this value the shortcut should be resolved.
    */
   shortcut: string;
+  /**
+   * A string representing the category this shortcut belongs to.
+   */
+  category?: string;
 }
 
 /**

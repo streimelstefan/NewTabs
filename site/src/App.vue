@@ -4,14 +4,55 @@ import clock from './components/clock.vue';
 import settings from './components/settings.vue';
 import { useBackgroundStore } from './stores/background';
 import { useShortcutStore } from './stores/shortcuts';
-import { useStateStore, State } from './stores/state';
+import { FailureMode, useStateStore } from './stores/state';
 import SearchField from './components/search-field.vue';
+import ShortcutOverview from './components/shortcut-overview.vue';
 import { useSearchEngineStore } from './stores/searchEngine';
+import NtButton from './components/el/nt-button.vue';
 
 const background = useBackgroundStore();
 const state = useStateStore();
 const shortcuts = useShortcutStore();
 const searchEngine = useSearchEngineStore();
+
+state.transitions = [
+  {
+    from: 'clock',
+    to: 'search',
+  },
+  {
+    from: 'clock',
+    to: 'menu',
+  },
+  {
+    from: 'shortcuts',
+    to: 'clock',
+  },
+  {
+    from: 'shortcuts',
+    to: 'search',
+  },
+  {
+    from: 'shortcuts',
+    to: 'menu',
+  },
+  {
+    from: 'clock',
+    to: 'shortcuts',
+  },
+  {
+    from: 'menu',
+    to: 'clock',
+  },
+  {
+    from: 'search',
+    to: 'clock',
+  },
+];
+
+state.state = 'clock';
+state.failureMode = FailureMode.log;
+
 searchEngine.load();
 shortcuts.loadShortcuts();
 
@@ -41,9 +82,7 @@ function changeToSearch(event: KeyboardEvent) {
   // if the key is a white space character or a special character like shift delete.
   if (event.key.length !== 1) return;
 
-  if (state.state === State.clock) {
-    state.state = State.search;
-  }
+  state.changeState('search');
 }
 </script>
 
@@ -55,19 +94,22 @@ function changeToSearch(event: KeyboardEvent) {
     <div
       class="h-screen w-screen flex items-center justify-center bg-no-repeat bg-center bg-black bg-opacity-20 backdrop-blur-md"
       ref="mainDiv"
-      @click.self="
-        state.state === State.settings
-          ? state.changeState(State.clock)
-          : undefined
-      "
+      @click.self="state.changeState('clock')"
       :style="{ 'background-image': background.background }"
     >
+      <NtButton
+        class="absolute top-0 right-0 w-16 h-16 m-0"
+        @click="state.changeState('menu')"
+      >
+        <img src="./assets/icons/settings.svg" alt="settings" />
+      </NtButton>
       <clock
-        v-if="state.state === State.clock"
-        @click="state.changeState(State.settings)"
+        v-if="state.state === 'clock'"
+        @click="state.changeState('shortcuts')"
       ></clock>
-      <settings v-if="state.state === State.settings"></settings>
-      <SearchField v-if="state.state === State.search"></SearchField>
+      <settings v-if="state.state === 'menu'"></settings>
+      <SearchField v-if="state.state === 'search'"></SearchField>
+      <ShortcutOverview v-if="state.state === 'shortcuts'"></ShortcutOverview>
     </div>
   </div>
 </template>

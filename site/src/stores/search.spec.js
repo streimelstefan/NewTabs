@@ -81,13 +81,13 @@ describe('searchStore', () => {
       expect(window.location.href).toEqual('http://youtube.xyz/?split=true');
     });
 
-    test('youtube.xyz/test#somthing?split=true should redirect to http://youtube.xyz/test#somthing?split=true', () => {
+    test('youtube.xyz/test#something?split=true should redirect to http://youtube.xyz/test#somthing?split=true', () => {
       const search = useSearchStore();
 
-      search.search('youtube.xyz/test#somthing?split=true');
+      search.search('youtube.xyz/test#something?split=true');
 
       expect(window.location.href).toEqual(
-        'http://youtube.xyz/test#somthing?split=true'
+        'http://youtube.xyz/test#something?split=true'
       );
     });
 

@@ -2,7 +2,7 @@
 import { useSearchStore } from '@/stores/search';
 import { useSearchEngineStore } from '@/stores/searchEngine';
 import { useShortcutStore } from '@/stores/shortcuts';
-import { State, useStateStore } from '@/stores/state';
+import { useStateStore } from '@/stores/state';
 import { computed, ref } from '@vue/reactivity';
 import { onMounted, onUnmounted, watch } from 'vue';
 
@@ -65,29 +65,6 @@ function globalKeyListener(event: KeyboardEvent) {
   }
 }
 
-function checkEdgeCases(query: string): {
-  hasEdgeCase: boolean;
-  operation?: 'shortcut' | 'search' | 'website';
-} {
-  const tests: {
-    regex: RegExp;
-    operation: 'shortcut' | 'search' | 'website';
-  }[] = [{ regex: /^\w*:/, operation: 'search' }];
-
-  for (const test of tests) {
-    if (test.regex.test(query)) {
-      return {
-        hasEdgeCase: true,
-        operation: test.operation,
-      };
-    }
-  }
-
-  return {
-    hasEdgeCase: false,
-  };
-}
-
 const shortcutUrl = computed(() => {
   const sc = shortcuts.getByKey(query.value);
   if (sc) {
@@ -113,7 +90,7 @@ const searchHint = computed(() => {
 
 watch(query, (value) => {
   if (value === '') {
-    state.state = State.clock;
+    state.changeState('clock');
   }
 });
 
