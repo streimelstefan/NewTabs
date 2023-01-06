@@ -23,3 +23,6 @@ move .\dist\index.html ..\chrome_extension\popup.html
 move .\dist\assets\* ..\chrome_extension\assets
 
 cd ..
+
+:: zip chrome extension
+"C:\Program Files\7-Zip\7z.exe" a -tzip "chrome_extension.zip" "chrome_extension"
