@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import type { VNodeNormalizedChildren } from 'vue';
 
 enum DbProviders {
   local,
@@ -66,6 +67,23 @@ export const useDbStore = defineStore('db', {
         }
 
         res(localStorage.getItem(key));
+      });
+    },
+    remove(key: string, sync: boolean = false) {
+      return new Promise<void>((res, rej) => {
+        if (this.dbProvider === DbProviders.chrome) {
+          if (sync) {
+            return chrome.storage.sync.remove([key], () => {
+              res();
+            });
+          }
+
+          return chrome.storage.local.remove([key], () => {
+            res();
+          });
+        }
+
+        res(localStorage.removeItem(key));
       });
     },
   },

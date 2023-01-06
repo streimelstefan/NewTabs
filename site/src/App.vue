@@ -72,6 +72,8 @@ onMounted(async () => {
     await background.loadImage();
     await background.saveImage();
   }
+
+  await background.start();
 });
 
 onUnmounted(async () => {

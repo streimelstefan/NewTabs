@@ -3,6 +3,7 @@ import FileDropOff from './background/file-drop-off.vue';
 import NtButton from '../el/nt-button.vue';
 import { useBackgroundStore } from '../../stores/background';
 import { ref } from 'vue';
+import MultiPictureAreaVue from './background/multi-picture-area.vue';
 
 const background = useBackgroundStore();
 
@@ -18,7 +19,7 @@ async function getNewImage() {
 </script>
 
 <template>
-  <div class="h-full">
+  <div class="mb-10">
     <h1 class="w-full text-center text-lg text-white">Background</h1>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-10 mt-5 h-1/3">
       <form class="flex flex-col items-center" @submit.prevent="">
@@ -59,4 +60,5 @@ async function getNewImage() {
       </div>
     </div>
   </div>
+  <MultiPictureAreaVue></MultiPictureAreaVue>
 </template>
