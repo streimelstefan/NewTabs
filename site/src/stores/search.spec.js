@@ -154,7 +154,7 @@ describe('searchStore', () => {
       expect(
         window.location.href.includes(searchEngine.getSearchPrefix())
       ).toBeTruthy();
-      expect(window.location.href.includes('Error:test')).toBeTruthy();
+      expect(window.location.href.includes('Error%3Atest')).toBeTruthy();
     });
 
     test('"Error%test" should be searched with the default search engine', () => {
@@ -166,7 +166,7 @@ describe('searchStore', () => {
       expect(
         window.location.href.includes(searchEngine.getSearchPrefix())
       ).toBeTruthy();
-      expect(window.location.href.includes('Error%test')).toBeTruthy();
+      expect(window.location.href.includes('Error%25test')).toBeTruthy();
     });
 
     test('"Error#test" should be searched with the default search engine', () => {
@@ -178,7 +178,7 @@ describe('searchStore', () => {
       expect(
         window.location.href.includes(searchEngine.getSearchPrefix())
       ).toBeTruthy();
-      expect(window.location.href.includes('Error#test')).toBeTruthy();
+      expect(window.location.href.includes('Error%23test')).toBeTruthy();
     });
 
     test('"Error?test" should be searched with the default search engine', () => {
@@ -190,7 +190,7 @@ describe('searchStore', () => {
       expect(
         window.location.href.includes(searchEngine.getSearchPrefix())
       ).toBeTruthy();
-      expect(window.location.href.includes('Error?test')).toBeTruthy();
+      expect(window.location.href.includes('Error%3Ftest')).toBeTruthy();
     });
 
     test('"search for .error" should be searched with the default search engine', () => {

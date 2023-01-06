@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import ntButton from '../el/nt-button.vue';
 import shortcutForm from './shortcut-form.vue';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import type { ShortCut } from '@/stores/shortcuts';
 
 const { shortcut } = defineProps(['shortcut']);
@@ -9,7 +9,7 @@ let scBackup: ShortCut;
 
 const openEdit = ref(false);
 
-defineEmits(['update', 'cancel', 'delete']);
+const emits = defineEmits(['update', 'cancel', 'delete']);
 
 function canceled() {
   openEdit.value = false;
@@ -26,6 +26,26 @@ function openEditor() {
     url: shortcut.url,
   };
 }
+
+function update() {
+  console.log(editShortcut);
+  emits('update', {
+    name: editShortcut.value.name,
+    shortcut: editShortcut.value.shortcut,
+    url: editShortcut.value.url,
+    category: editShortcut.value.category,
+  });
+  openEdit.value = false;
+}
+
+const editShortcut = computed<ShortCut>(() => {
+  if (openEdit.value) {
+    console.log(shortcut.name);
+    return JSON.parse(JSON.stringify(shortcut));
+  }
+
+  return undefined;
+});
 </script>
 <template>
   <div
@@ -53,14 +73,11 @@ function openEditor() {
     </div>
     <div v-if="openEdit">
       <shortcutForm
-        v-model:url="shortcut.url"
-        v-model:name="shortcut.name"
-        v-model:shortcut="shortcut.shortcut"
-        v-model:category="shortcut.category"
-        @submit="
-          $emit('update', $event);
-          openEdit = false;
-        "
+        v-model:url="editShortcut.url"
+        v-model:name="editShortcut.name"
+        v-model:shortcut="editShortcut.shortcut"
+        v-model:category="editShortcut.category"
+        @submit="update()"
         @cancel="canceled()"
         @delete="$emit('delete', $event)"
         addDelete

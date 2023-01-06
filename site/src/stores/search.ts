@@ -109,7 +109,7 @@ export const useSearchStore = defineStore('search', {
 
       // if the url is undefined the parse failed!
       if (!url) return UrlParseMode.noUrl;
-      console.log(url);
+
       // "localhost" is a special case and needs to be true as well
       if (url.host === 'localhost') return parseMode;
 
@@ -168,7 +168,8 @@ export const useSearchStore = defineStore('search', {
     _searchFor(query: string) {
       const searchEngine = useSearchEngineStore();
 
-      window.location.href = searchEngine.getSearchPrefix() + query;
+      window.location.href =
+        searchEngine.getSearchPrefix() + encodeURIComponent(query);
     },
     _gotToShortcut(shortcutKey: string) {
       const shortcutStore = useShortcutStore();

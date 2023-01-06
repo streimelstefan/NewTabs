@@ -88,11 +88,11 @@ function changeToSearch(event: KeyboardEvent) {
 
 <template>
   <div
-    class="h-screen w-screen bg-no-repeat bg-cover"
+    class="h-screen w-screen bg-no-repeat bg-cover bg-center"
     :style="{ 'background-image': background.background }"
   >
     <div
-      class="h-screen w-screen flex items-center justify-center bg-no-repeat bg-center bg-black bg-opacity-20 backdrop-blur-md"
+      class="h-screen w-screen flex items-center justify-center bg-no-repeat bg-contain bg-center bg-black bg-opacity-20 backdrop-blur-md"
       ref="mainDiv"
       @click.self="state.changeState('clock')"
       :style="{ 'background-image': background.background }"
