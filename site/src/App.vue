@@ -56,9 +56,6 @@ state.failureMode = FailureMode.log;
 searchEngine.load();
 shortcuts.loadShortcuts();
 
-// @ts-ignore
-const mainDiv = ref<HTMLElement>(null);
-
 onMounted(async () => {
   if (await shortcuts.checkForOldShortcuts()) {
     shortcuts.importOldShortcuts();
@@ -89,15 +86,42 @@ function changeToSearch(event: KeyboardEvent) {
 </script>
 
 <template>
-  <div
+  <!-- <div
     class="h-screen w-screen bg-no-repeat bg-cover bg-center"
-    :style="{ 'background-image': background.background }"
+    :style="{ 'background-image': background.backgroundUrl }"
   >
+
+  </div> -->
+
+  <!-- Backdrop -->
+  <div class="w-screen h-screen absolute top-0 left-0 overflow-hidden">
+    <div class="h-full w-full flex items-center justify-center">
+      <img
+        class="object-fill w-full z-0"
+        :src="background.backgroundUrl"
+        alt="backdrop image"
+      />
+    </div>
+  </div>
+
+  <!-- background image -->
+  <div
+    class="w-screen h-screen absolute top-0 left-0 overflow-hidden z-10 bg-black bg-opacity-20 backdrop-blur-md"
+  >
+    <div class="h-full w-full flex items-center justify-center">
+      <img
+        class="object-contain h-full z-10"
+        :src="background.backgroundUrl"
+        alt="background image"
+      />
+    </div>
+  </div>
+
+  <!-- content -->
+  <div class="w-screen h-screen absolute top-0 left-0 overflow-hidden z-10">
     <div
-      class="h-screen w-screen flex items-center justify-center bg-no-repeat bg-contain bg-center bg-black bg-opacity-20 backdrop-blur-md"
-      ref="mainDiv"
+      class="h-full w-full flex items-center justify-center"
       @click.self="state.changeState('clock')"
-      :style="{ 'background-image': background.background }"
     >
       <NtButton
         class="absolute top-0 right-0 w-16 h-16 m-0"

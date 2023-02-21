@@ -1,10 +1,17 @@
 import { defineStore } from 'pinia';
 import { useDbStore } from './db';
 
+interface ImageSettings {
+  width: number;
+  height: number;
+  url: string;
+}
+
 export const useBackgroundStore = defineStore('background', {
   state: () => {
     return {
-      background: '',
+      backgroundUrl: '',
+      backgroundBlob: null as unknown as Blob,
       fetchingImage: false,
       inset: 0,
       multiPictureMode: true,
@@ -18,14 +25,14 @@ export const useBackgroundStore = defineStore('background', {
   // could also be defined as
   // state: () => ({ count: 0 })
   actions: {
-    saveImage() {
-      console.log('Saving image to database');
+    async saveImage() {
       const db = useDbStore();
 
-      db.save('bg-image', this.background);
+      db.save('bg-image', await this.getBlobAsBase64(this.backgroundBlob));
     },
     start() {
       this.multiPictureInterval = setInterval(async () => {
+        return;
         if (this.multiPictureImages.length === 0) return;
 
         if (!this.multiPictureMode) return;
@@ -33,124 +40,150 @@ export const useBackgroundStore = defineStore('background', {
         if (this.multiPictureActivePicture >= this.multiPictureImages.length) {
           this.multiPictureActivePicture = 0;
         }
-        console.log(
-          `setting background to image ${
-            this.multiPictureImages[this.multiPictureActivePicture]
-          }`
-        );
-        this.background = await this.getMultiImage(
+
+        this.backgroundBlob = await this.getMultiImage(
           this.multiPictureImages[this.multiPictureActivePicture]
         );
+
+        this.setBackgroundUrl(await this.getImageUrl(this.backgroundBlob));
 
         this.multiPictureActivePicture += 1;
       }, this.multiPictureIntervalTimeout);
     },
+    setBackgroundUrl(imageBlobUrl: string) {
+      this.backgroundUrl = `${imageBlobUrl}`;
+    },
     async loadCachedImage(): Promise<boolean> {
-      console.log('Loading cached image from database');
       const db = useDbStore();
 
       let cachedImage = await db.get('bg-image');
+
       // if there is no cached image return false and do not
       // save the image in the background variable
       if (!cachedImage) {
         return false;
       }
 
-      this.background = cachedImage;
+      // removes the url(...) from older saves
+      cachedImage = await this._removeUrlFromImageUrl(cachedImage);
+
+      this.backgroundBlob = await this.getBlobFromBase64(cachedImage);
+
+      this.setBackgroundUrl(await this.getImageUrl(this.backgroundBlob));
       return true;
     },
     async loadImage() {
-      return new Promise((res, rej) => {
+      return new Promise(async (res, rej) => {
         // only allow one image the be requested at once
         if (this.fetchingImage) {
-          console.info(
-            'An image load request has already been sent! Not sending a new one.'
-          );
-          res(this.background);
+          res(this.backgroundUrl);
         }
         this.fetchingImage = true;
-        // get the size of the viewport for the image size
-        const vw = Math.max(
-          document.documentElement.clientWidth,
-          window.innerWidth || 0
-        );
-        const vh = Math.max(
-          document.documentElement.clientHeight,
-          window.innerHeight || 0
-        );
-        const offsetPer = (100 - this.inset) / 100;
-        const height = Math.trunc(vh * offsetPer);
-        const width = Math.trunc(vw * offsetPer);
-        console.groupCollapsed('Requesting new image');
-        const url = 'https://picsum.photos/' + width + '/' + height;
-        console.table({
-          viewPortHeight: vh,
-          viewportWidth: vw,
-          inset: this.inset,
-          offsetPercentage: offsetPer,
-          generatedHeight: height,
-          generatedWidth: width,
-          requestUrl: url,
-        });
-        console.time('loadImage');
-        var imgxhr = new XMLHttpRequest();
-        imgxhr.open('GET', url + '?' + new Date().getTime());
-        imgxhr.responseType = 'blob';
-        imgxhr.onload = function () {
-          if (imgxhr.status === 200) {
-            reader.readAsDataURL(imgxhr.response);
-          }
-        };
-        var reader = new FileReader();
-        reader.onloadend = () => {
-          if (imgxhr.status !== 200) {
-            console.warn('Failed to load image');
-            console.dir({
-              status: imgxhr.status,
-              response: imgxhr.response,
-            });
-          }
-          console.time;
-          console.log('Image loaded');
-          console.timeEnd('loadImage');
-          console.groupEnd();
-          this.fetchingImage = false;
-          this.setBackground(reader.result);
-          res(this.background);
-        };
-        imgxhr.send();
+
+        const imageSettings = await this._generateImageSettings();
+
+        const response = await fetch(imageSettings.url);
+        this.backgroundBlob = await response.blob();
+
+        this.fetchingImage = false;
+        this.setBackgroundUrl(await this.getImageUrl(this.backgroundBlob));
+        res(this.backgroundUrl);
       });
     },
-    setBackground(image: string | ArrayBuffer | null) {
-      console.log('Setting new Background');
-      this.background = `url(${image})`;
+    async getImageUrl(image: Blob): Promise<string> {
+      return new Promise((resolve, reject) => {
+        try {
+          const imageUrl = URL.createObjectURL(image);
+          resolve(imageUrl);
+        } catch (error) {
+          reject(error);
+        }
+      });
     },
-    async addImageToMultiImage(image: string | ArrayBuffer | null) {
-      if (image === null) return;
+    /**
+     * It takes a Blob and returns a Promise that resolves to a base64 string
+     * @param {Blob} blob - Blob - The image to convert to base64
+     * @returns A promise that resolves to a string.
+     */
+    getBlobAsBase64(blob: Blob): Promise<string> {
+      return new Promise((resolve, reject) => {
+        if (!blob) {
+          reject('No image provided');
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(blob);
+      });
+    },
+    /**
+     * It takes a base64 string and returns a blob.
+     * @param {string} blob - string - The base64 string of the blob you want to convert
+     * @returns A blob.
+     * @throws if the string is not a valid base64 string.
+     */
+    async getBlobFromBase64(blob: string): Promise<Blob> {
+      try {
+        const response = await fetch(blob);
+        if (response.ok) {
+          return await response.blob();
+        } else {
+          throw new Error(
+            `Error getting blob from base64 string: ${response.status} ${response.statusText}`
+          );
+        }
+      } catch (error) {
+        throw new Error('Error fetching blob');
+      }
+    },
+
+    /**
+     * It takes a blob, converts it to base64, saves it to Database, and then adds the name of the blob to
+     * an array of images.
+     * @param {Blob} image - Blob - the image that is being added to the database
+     * @returns a promise.
+     */
+    async addImageToMultiImage(image: Blob) {
+      if (!image) {
+        return;
+      }
 
       const db = useDbStore();
 
-      const picName = `background-image-${this.multiPictureImages.length}`;
-      console.log(picName);
+      let currentPicIndex = 0;
+      let picName = `background-image-${currentPicIndex}`;
 
-      await db.save(picName, image.toString());
+      // as long as there is a image with this index go to the next index.
+      while (await db.get(picName)) {
+        currentPicIndex++;
+        picName = `background-image-${currentPicIndex}`;
+      }
+
+      try {
+        await db.save(picName, await this.getBlobAsBase64(image));
+      } catch (err) {
+        return;
+      }
+
       this.multiPictureImages.push(picName);
       await this.saveSettings();
     },
-    async getMultiImage(imageName: string) {
+    async getMultiImage(imageName: string): Promise<Blob> {
       const db = useDbStore();
 
-      const image = await db.get(imageName);
+      let image = await db.get(imageName);
 
       if (image === null) {
-        return '';
+        return new Blob();
       }
 
-      return image;
+      image = await this._removeUrlFromImageUrl(image);
+
+      return await this.getBlobFromBase64(image);
     },
     async removeMultiImage(imageName: string) {
       const db = useDbStore();
-      console.log(imageName);
 
       if (
         this.multiPictureImages.indexOf(imageName) ===
@@ -200,20 +233,46 @@ export const useBackgroundStore = defineStore('background', {
       const multiPictureActivePicture = await db.get(
         'background-multi-images-index'
       );
-      console.log(inset);
-      console.log(backgroundMultiImages);
+
       if (inset) {
         this.inset = parseInt(inset);
       }
 
       if (backgroundMultiImages) {
         this.multiPictureImages = JSON.parse(backgroundMultiImages);
-        console.log(this.multiPictureImages);
       }
 
       if (multiPictureActivePicture) {
         this.multiPictureActivePicture = parseInt(multiPictureActivePicture);
       }
+    },
+    async _generateImageSettings(): Promise<ImageSettings> {
+      // get the size of the viewport for the image size
+      const vw = Math.max(
+        document.documentElement.clientWidth,
+        window.innerWidth || 0
+      );
+      const vh = Math.max(
+        document.documentElement.clientHeight,
+        window.innerHeight || 0
+      );
+      const offsetPer = (100 - this.inset) / 100;
+      const height = Math.trunc(vw * offsetPer);
+      const width = Math.trunc(vh * offsetPer);
+
+      return {
+        width: width,
+        height: height,
+        url: 'https://picsum.photos/' + width + '/' + height,
+      };
+    },
+    async _removeUrlFromImageUrl(image: string): Promise<string> {
+      if (image.startsWith('url(')) {
+        image = image.slice(4);
+        image = image.slice(0, -1);
+      }
+
+      return image;
     },
   },
 });

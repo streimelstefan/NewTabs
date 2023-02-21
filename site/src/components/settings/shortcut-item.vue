@@ -28,7 +28,6 @@ function openEditor() {
 }
 
 function update() {
-  console.log(editShortcut);
   emits('update', {
     name: editShortcut.value.name,
     shortcut: editShortcut.value.shortcut,
@@ -40,7 +39,6 @@ function update() {
 
 const editShortcut = computed<ShortCut>(() => {
   if (openEdit.value) {
-    console.log(shortcut.name);
     return JSON.parse(JSON.stringify(shortcut));
   }
 

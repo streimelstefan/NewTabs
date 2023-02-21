@@ -13,8 +13,6 @@ const newSc = reactive({
   url: '',
 } as ShortCut);
 
-console.log(shortcuts.shortcuts);
-
 function addNewShortcut() {
   if (!newSc.name) return;
   if (!newSc.shortcut) return;
@@ -40,14 +38,10 @@ function deleteSc(sc: ShortCut) {
 }
 
 function updateSc(sc: ShortCut) {
-  console.log(sc);
   shortcuts.addShortcut(sc, false);
 }
 
 const scs = computed(() => {
-  console.log(Object.values(shortcuts.shortcuts));
-  console.log(typeof shortcuts.shortcuts);
-
   const scs = Object.values(shortcuts.shortcuts);
 
   scs.sort((a, b) => {

@@ -213,8 +213,6 @@ describe('searchStore', () => {
 
       search.search(' test.txt');
 
-      console.log(window.location.href);
-      console.log(searchEngine.getSearchPrefix());
       expect(
         window.location.href.includes(searchEngine.getSearchPrefix())
       ).toBeTruthy();

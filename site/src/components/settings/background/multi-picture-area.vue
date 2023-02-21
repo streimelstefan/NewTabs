@@ -11,12 +11,10 @@ watch(
   backgroundStore.multiPictureImages,
   async () => {
     images.value = [];
-    console.log(backgroundStore.multiPictureImages);
     for (const image of backgroundStore.multiPictureImages) {
-      images.value.push(await backgroundStore.getMultiImage(image));
+      const imageBlob = await backgroundStore.getMultiImage(image);
+      images.value.push(await backgroundStore.getImageUrl(imageBlob));
     }
-
-    console.log(images.value);
   },
   { immediate: true }
 );
@@ -40,7 +38,9 @@ onUnmounted(() => {
   </h1>
 
   <NtButton
-    @click="backgroundStore.addImageToMultiImage(backgroundStore.background)"
+    @click="
+      backgroundStore.addImageToMultiImage(backgroundStore.backgroundBlob)
+    "
     >Add current Background</NtButton
   >
 
@@ -48,7 +48,7 @@ onUnmounted(() => {
     <div
       v-for="(picture, index) in images"
       class="rounded-md aspect-square bg-cover bg-center group"
-      :style="{ 'background-image': picture }"
+      :style="{ 'background-image': `url(${picture})` }"
     >
       <button
         @click="removePic(index)"

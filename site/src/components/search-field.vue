@@ -31,7 +31,6 @@ function setQuery(event: Event) {
 
 function checkHintAction(event: KeyboardEvent) {
   const actionKeys = ['ArrowUp', 'ArrowDown'];
-  console.log(event);
   if (actionKeys.includes(event.code)) {
     event.preventDefault();
     event.stopImmediatePropagation();

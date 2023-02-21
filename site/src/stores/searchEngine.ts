@@ -46,7 +46,6 @@ export const useSearchEngineStore = defineStore('searchEngine', {
     },
     async setDefault(engine: string) {
       if (!this.searchEngines[engine]) {
-        console.log(this.searchEngines[engine]);
         return console.error(`Search engine ${engine} does not exist!`);
       }
       this.default = engine;
@@ -61,7 +60,6 @@ export const useSearchEngineStore = defineStore('searchEngine', {
       const db = useDbStore();
 
       const defaultSe = await db.get('searchEngine', true);
-      console.log(defaultSe);
       if (defaultSe) {
         await this.setDefault(defaultSe);
       }

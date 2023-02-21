@@ -1,3 +1,4 @@
+/* A search engine that is used to search for a query. */
 /**
  * @file Contains the logic of what query should exepcute what search action.
  * @copyright Streimel Stefan under Apache License 2.0
@@ -162,15 +163,32 @@ export const useSearchStore = defineStore('search', {
       }
     },
 
+    /**
+     * _goToSite() is a function that takes a string as an argument and redirects the user to the url
+     * that is passed in.
+     * @param {string} url - The URL of the site you want to go to.
+     */
     _goToSite(url: string) {
       window.location.href = url;
     },
+    /**
+     * It takes a string, gets the search engine prefix from the store, and then redirects the user to
+     * the search engine with the query string.
+     * @param {string} query - The search query to search for.
+     */
     _searchFor(query: string) {
       const searchEngine = useSearchEngineStore();
 
       window.location.href =
         searchEngine.getSearchPrefix() + encodeURIComponent(query);
     },
+    /**
+     * _gotToShortcut() is a function that takes a shortcutKey as a parameter and returns a
+     * shortcutStore.getByKey() function that takes a shortcutKey as a parameter and returns a
+     * shortcut.url
+     * @param {string} shortcutKey - The key of the shortcut you want to go to.
+     * @returns The function is being returned.
+     */
     _gotToShortcut(shortcutKey: string) {
       const shortcutStore = useShortcutStore();
 

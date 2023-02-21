@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import type { VNodeNormalizedChildren } from 'vue';
 
-enum DbProviders {
+export enum DbProviders {
   local,
   chrome,
 }
@@ -9,13 +9,11 @@ enum DbProviders {
 export const useDbStore = defineStore('db', {
   state: () => {
     if (typeof chrome === 'undefined' || !chrome.storage) {
-      console.log('Db provider set to localhost');
       return {
         dbProvider: DbProviders.local,
       };
     }
 
-    console.log('Db provider set to chrome storage');
     return {
       dbProvider: DbProviders.chrome,
     };

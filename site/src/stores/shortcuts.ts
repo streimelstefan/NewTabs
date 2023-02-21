@@ -101,10 +101,9 @@ export const useShortcutStore = defineStore('shortcut', {
     async loadShortcuts(): Promise<void> {
       const db = useDbStore();
       let scString = await db.get('shortcuts', true);
-      console.log(`Got shorcuts from database: ${scString}`);
+
       if (scString !== null) {
         this.shortcuts = JSON.parse(scString);
-        console.log(this.shortcuts);
       }
     },
     /**
@@ -263,25 +262,12 @@ export const useShortcutStore = defineStore('shortcut', {
       }[];
 
       if (sc) {
-        console.log('Found a old shortcut config. Converting to new one');
-        console.log(sc);
-
         sc.forEach(async (shortcut) => {
-          if (
-            !(await this.addShortcut({
-              name: shortcut.name,
-              shortcut: shortcut.key,
-              url: shortcut.url,
-            }))
-          ) {
-            console.log(
-              `Unable to import shortcut (${shortcut.name}) ${shortcut.key} -> ${shortcut.url}`
-            );
-          } else {
-            console.log(
-              `Shortcut (${shortcut.name}) ${shortcut.key} -> ${shortcut.url} imported`
-            );
-          }
+          await this.addShortcut({
+            name: shortcut.name,
+            shortcut: shortcut.key,
+            url: shortcut.url,
+          });
         });
       }
     },

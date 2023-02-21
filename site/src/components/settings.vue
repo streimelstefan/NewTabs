@@ -16,7 +16,6 @@ let settingState = ref(SettingState.shortcuts);
 
 function changePage(page: SettingState) {
   settingState.value = page;
-  console.log(settingState);
   openMenu.value = false;
 }
 </script>
